@@ -174,20 +174,16 @@ def scrape_produto(url: str):
 def load_sitemap_urls():
     """Carrega URLs de produto armazenadas no MongoDB"""
     documentos_sitemaps = sitemaps_collection.find()
-    total_urls, urls_produto = 0, []
+    urls_produto = []
 
     for doc in documentos_sitemaps:
         origem = doc["sitemap"]["origem"]
         urls = [item["url"] for item in doc["urls"] if "/produto/" in item["url"]]
-        print(f"Sitemap '{origem}' -> {len(urls)} URLs de produto")
         urls_produto.extend(urls)
-        total_urls += len(urls)
 
     if not urls_produto:
-        print("Nenhuma URL encontrada. Execute primeiro o sitemap.py")
         return []
 
-    print(f"\nTotal geral de URLs de produto: {total_urls}")
     return urls_produto
 
 
@@ -202,11 +198,11 @@ def save_produto(dados: dict):
         novo_documento = {"$set": dados}
         resultado = collection.update_one(filtro, novo_documento, upsert=True)
 
-        if resultado.upserted_id:
-            print(f"NOVO: Produto inserido com o ID {resultado.upserted_id}")
-        else:
-            print(f"ATUALIZADO: Produto {codigo_produto} atualizado.")
+        #if resultado.upserted_id:
+        #   print(f"NOVO: Produto inserido com o ID {resultado.upserted_id}")
+        #else:
+        #   print(f"ATUALIZADO: Produto {codigo_produto} atualizado.")
     except PyMongoError as e:
-        print(f"[ERRO MONGO] Falha ao salvar produto {dados.get('produto', {}).get('titulo')}: {e}")
+        raise Exception(f"[ERRO MONGO] Falha ao salvar produto {dados.get('produto', {}).get('titulo')}: {e}")
     except Exception as e:
-        print(f"[ERRO] Falha inesperada ao salvar produto: {e}")
+        raise Exception((f"[ERRO] Falha inesperada ao salvar produto: {e}"))
