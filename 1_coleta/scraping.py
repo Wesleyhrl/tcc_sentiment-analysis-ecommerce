@@ -1,9 +1,12 @@
 import time
+import random
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from pymongo import MongoClient
+from selenium.common.exceptions import  WebDriverException
+from pymongo.errors import PyMongoError
 
 
 # CONFIGURAÇÕES SELENIUM
@@ -12,10 +15,17 @@ options.add_argument("--headless=new")
 options.add_argument("--no-sandbox")
 options.add_argument("--disable-dev-shm-usage")
 options.add_argument("--disable-notifications")
+options.add_argument("--blink-settings=imagesEnabled=false")
 
-driver = webdriver.Chrome(options=options)
-wait = WebDriverWait(driver, 15)
+def init_driver():
+    global driver, wait
+    driver = webdriver.Chrome(options=options)
+    wait = WebDriverWait(driver, 15)
 
+
+def close_driver():
+    global driver
+    driver.quit()
 
 # CONEXÃO MONGODB
 client = MongoClient("mongodb://localhost:27017/")
@@ -23,6 +33,10 @@ db = client["kabum_scraping"]
 collection = db["produtos"]
 sitemaps_collection = db["sitemaps"]
 
+def pausa(min_seg=1, max_seg=4):
+    """Pausa aleatória entre min_seg e max_seg segundos"""
+    tempo = random.uniform(min_seg, max_seg)
+    time.sleep(tempo)
 
 def extract_brand_model(text: str, dados_produto: dict):
     """Extrai marca e modelo do texto técnico"""
@@ -37,7 +51,10 @@ def extract_brand_model(text: str, dados_produto: dict):
 
 def scrape_produto(url: str):
     """Extrai dados de um único produto"""
-    driver.get(url)
+    try:
+        driver.get(url)
+    except WebDriverException as e:
+        raise RuntimeError(f"Falha ao carregar página {url}: {e}")
     dados_produto = {"produto": {}, "avaliacoes": []}
 
     # --- Produto ---
@@ -140,7 +157,7 @@ def scrape_produto(url: str):
             if "disabled" in next_button.get_attribute("class"):
                 break
             driver.execute_script("arguments[0].click();", next_button.find_element(By.CSS_SELECTOR, "a.nextLink"))
-            time.sleep(3)
+            pausa(2, 4) # Pausa entre páginas
             pagina_atual += 1
         except:
             break
@@ -148,6 +165,9 @@ def scrape_produto(url: str):
     dados_produto["produto"]["total_avaliacoes_coletadas"] = len(dados_produto["avaliacoes"])
     dados_produto["produto"]["url"] = url
     dados_produto["produto"]["data_extracao"] = time.strftime("%Y-%m-%d %H:%M:%S")
+
+    pausa(3, 6) # Pausa entre produtos
+
     return dados_produto
 
 
@@ -173,12 +193,20 @@ def load_sitemap_urls():
 
 def save_produto(dados: dict):
     """Salva/atualiza produto no MongoDB"""
-    codigo_produto = dados["produto"]["codigo"]
-    filtro = {"_id": codigo_produto}
-    novo_documento = {"$set": dados}
-    resultado = collection.update_one(filtro, novo_documento, upsert=True)
+    try:
+        codigo_produto = dados["produto"]["codigo"]
+        if not codigo_produto:
+            raise ValueError("Produto sem código identificado, não pode salvar.")
 
-    if resultado.upserted_id:
-        print(f"NOVO: Produto inserido com o ID {resultado.upserted_id}")
-    else:
-        print(f"ATUALIZADO: Produto {codigo_produto} atualizado.")
+        filtro = {"_id": codigo_produto}
+        novo_documento = {"$set": dados}
+        resultado = collection.update_one(filtro, novo_documento, upsert=True)
+
+        if resultado.upserted_id:
+            print(f"NOVO: Produto inserido com o ID {resultado.upserted_id}")
+        else:
+            print(f"ATUALIZADO: Produto {codigo_produto} atualizado.")
+    except PyMongoError as e:
+        print(f"[ERRO MONGO] Falha ao salvar produto {dados.get('produto', {}).get('titulo')}: {e}")
+    except Exception as e:
+        print(f"[ERRO] Falha inesperada ao salvar produto: {e}")
