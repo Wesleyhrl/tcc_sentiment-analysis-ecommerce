@@ -101,6 +101,13 @@ def scrape_produto(url: str):
         dados_produto["produto"]["informacoes_tecnicas"] = tech_info
     except:
         dados_produto["produto"]["informacoes_tecnicas"] = None
+    
+    try:
+        review_section = wait.until(EC.presence_of_element_located((By.ID, "reviewsSection")))
+        nota_review = review_section.find_element(By.CSS_SELECTOR, "span.sc-781b7e7f-1.hdvIZL").text.strip()
+        dados_produto["produto"]["classificacao"] = float(nota_review)
+    except:
+        tech_info = None
 
     # --- Avaliações ---
     pagina_atual = 1
