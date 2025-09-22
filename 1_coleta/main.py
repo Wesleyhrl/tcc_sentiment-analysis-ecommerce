@@ -3,13 +3,12 @@ import time
 from sitemap import process_sitemap
 from scraping import load_sitemap_urls, scrape_produto, save_produto, init_driver, close_driver
 from logger_config import setup_logger
-
+from resume import iniciar_estatisticas, atualizar_estatisticas
 logger = setup_logger()
 
 def main():
-    inicio = time.time()
     logger.info("==== Início da execução do scraping ====")
-
+    iniciar_estatisticas()
     # Contadores
     total_urls = 0
     total_erros = 0
@@ -46,9 +45,7 @@ def main():
     # --- 3. Scraping de cada produto ---
     init_driver()
     for url in urls:
-        partes = url.split('/')
-        url_limpa = '/'.join(partes[:5])
-        logger.info(f"Extraindo: {url_limpa}")
+        logger.info(f"Extraindo: {url}")
 
         tentativas = 0
         max_tentativas = 3
@@ -57,11 +54,14 @@ def main():
             try:
                 dados = scrape_produto(url)
                 save_produto(dados)
+                logger.info(f"Produto salvo.")
                 processadas += 1
+                atualizar_estatisticas(processados=processadas)
                 break
             except Exception as e:
                 tentativas += 1
                 total_erros += 1
+                atualizar_estatisticas(erros=total_erros)
                 logger.warning(f"Falha ao extrair {url} (tentativa {tentativas}/{max_tentativas}): {e}")
                 if tentativas == 0:
                     logger.info("Reiniciando o driver...")
@@ -71,18 +71,7 @@ def main():
                     logger.error(f"Produto {url} ignorado após {max_tentativas} tentativas.")
 
     close_driver()
-
-    # --- 4. Resumo final ---
-    fim = time.time()
-    duracao = fim - inicio
-    minutos = duracao / 60
-
-    logger.info("==== RESUMO FINAL ====")
-    logger.info(f"Tempo total: {minutos:.2f} minutos")
-    logger.info(f"Total de URLs carregadas: {total_urls}")
-    logger.info(f"Total processadas com sucesso: {processadas}")
-    logger.info(f"Total de erros: {total_erros}")
-    logger.info("=======================")
+    logger.info("==== Fim da execução do scraping ====")
 
 
 if __name__ == "__main__":

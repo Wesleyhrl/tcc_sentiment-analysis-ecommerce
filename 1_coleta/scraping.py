@@ -179,19 +179,22 @@ def scrape_produto(url: str):
 
 
 def load_sitemap_urls():
-    """Carrega URLs de produto armazenadas no MongoDB"""
+    """Carrega URLs de produto armazenadas no MongoDB, ignorando as já processadas"""
     documentos_sitemaps = sitemaps_collection.find()
     urls_produto = []
 
     for doc in documentos_sitemaps:
-        origem = doc["sitemap"]["origem"]
         urls = [item["url"] for item in doc["urls"] if "/produto/" in item["url"]]
         urls_produto.extend(urls)
 
     if not urls_produto:
         return []
 
-    return urls_produto
+    # Buscar apenas URLs que ainda não estão na coleção de produtos
+    urls_processadas = collection.distinct("produto.url")
+    urls_faltantes = list(set(urls_produto) - set(urls_processadas))
+
+    return urls_faltantes
 
 
 def save_produto(dados: dict):
