@@ -41,6 +41,7 @@ def main():
 
     total_urls = len(urls)
     logger.info(f"Total de URLs de produto carregadas: {total_urls}")
+    atualizar_estatisticas(urls_carregadas=total_urls)
 
     # --- 3. Scraping de cada produto ---
     init_driver()
