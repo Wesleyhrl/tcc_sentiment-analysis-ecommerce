@@ -3,3 +3,7 @@ requests
 lxml
 pymongo
 selenium
+pandas
+datasets
+scikit-learn
+accelerate
