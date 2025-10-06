@@ -8,12 +8,11 @@ def main():
     analyzer = SentimentAnalyzer()
 
     for produto in produtos[:10]:
-        for avaliacao in produto.get("avaliacoes", []):
-            sentimento = analyzer.analisar_avaliacao(
-                avaliacao.get("titulo", ""),
-                avaliacao.get("comentario", "")
-            )
-            avaliacao["sentimento"] = sentimento
+        avaliacoes = produto.get("avaliacoes", [])
+        
+        if avaliacoes:
+            # Analisa e retorna as avaliações já com sentimentos
+            produto["avaliacoes"] = analyzer.analisar_avaliacoes_em_lote(avaliacoes)
 
         # Calcula estatísticas do produto analisado
         estatisticas = calcular_estatisticas_produto(produto)

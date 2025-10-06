@@ -1,5 +1,5 @@
 from transformers import pipeline
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 
 class SentimentAnalyzer:
@@ -49,3 +49,40 @@ class SentimentAnalyzer:
             "score": round(float(melhor["score"]), 4),
             # "detalhado": resultado
         }
+    
+    def analisar_avaliacoes_em_lote(self, avaliacoes: List[Dict]) -> List[Dict]:
+        """
+        Analisa todas as avaliações de um produto em lote e retorna
+        o array de avaliações já com os sentimentos incluídos.
+        """
+        textos = []
+        indices_validos = []
+        
+        # Prepara os textos e guarda os índices dos textos válidos
+        for i, avaliacao in enumerate(avaliacoes):
+            titulo = avaliacao.get("titulo", "")
+            comentario = avaliacao.get("comentario", "")
+            texto = self.preparar_texto_analise(titulo, comentario)
+            
+            if texto and texto != ".":
+                textos.append(texto)
+                indices_validos.append(i)
+        
+        # Processa todos os textos válidos de uma vez
+        if textos:
+            resultados = self.pipe(textos)
+            
+            # Atribui os resultados diretamente às avaliações
+            for idx, resultado in zip(indices_validos, resultados):
+                melhor = max(resultado, key=lambda x: x["score"])
+                avaliacoes[idx]["sentimento"] = {
+                    "label": melhor["label"],
+                    "score": round(float(melhor["score"]), 4),
+                }
+        
+        # Para avaliações sem texto válido, atribui sentimento padrão
+        for i, avaliacao in enumerate(avaliacoes):
+            if "sentimento" not in avaliacao:
+                avaliacao["sentimento"] = {"label": "sem_texto", "score": 1.0}
+        
+        return avaliacoes
