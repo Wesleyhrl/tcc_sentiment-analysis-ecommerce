@@ -1,0 +1,41 @@
+[project]
+name = "tcc-sentiment-analysis-ecommerce"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Wesleyhrl",email = "wesley_henrique15@hotmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.13,<3.14"
+dependencies = [
+    "torch (>=2.8.0,<3.0.0)",
+    "torchvision (>=0.23.0,<0.24.0)",
+    "transformers (>=4.57.1,<5.0.0)",
+    "requests (>=2.32.5,<3.0.0)",
+    "lxml (>=6.0.2,<7.0.0)",
+    "pymongo (>=4.15.3,<5.0.0)",
+    "selenium (>=4.36.0,<5.0.0)",
+    "pandas (>=2.3.3,<3.0.0)",
+    "datasets (>=4.2.0,<5.0.0)",
+    "scikit-learn (>=1.7.2,<2.0.0)",
+    "accelerate (>=1.10.1,<2.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+# Repositório alternativo para instalação do PyTorch com suporte a CUDA 12.9
+[[tool.poetry.source]]
+name = "pytorch-cu129"
+url = "https://download.pytorch.org/whl/cu129"
+priority = "explicit"
+
+# Grupo de dependência opcional para CUDA
+[tool.poetry.group.cuda]
+optional = true
+
+[tool.poetry.group.cuda.dependencies]
+torch = { version = ">=2.8.0,<3.0.0", source = "pytorch-cu129" }
+torchvision = { version = ">=0.23.0,<0.24.0", source = "pytorch-cu129" }
