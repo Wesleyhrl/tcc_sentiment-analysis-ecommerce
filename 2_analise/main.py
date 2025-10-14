@@ -7,7 +7,7 @@ def main():
     produtos = carregar_produtos()
     analyzer = SentimentAnalyzer()
 
-    for produto in produtos[:10]:
+    for produto in produtos:
         avaliacoes = produto.get("avaliacoes", [])
         
         if avaliacoes:
