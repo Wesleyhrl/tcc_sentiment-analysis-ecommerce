@@ -3,3 +3,6 @@ __pycache__
 2_analise/fine-tuning/caramelo-smile-kabum-finetuned
 logs
 anotacoes.txt
+.venv
+__pycache__
+.env

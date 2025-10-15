@@ -1,7 +1,7 @@
 [project]
 name = "tcc-sentiment-analysis-ecommerce"
 version = "0.1.0"
-description = ""
+description = " Sistema de Análise de Sentimentos em Avaliações de Produtos de E-commerce usando Modelos de Linguagem"
 authors = [
     {name = "Wesleyhrl",email = "wesley_henrique15@hotmail.com"}
 ]
@@ -18,7 +18,9 @@ dependencies = [
     "pandas (>=2.3.3,<3.0.0)",
     "datasets (>=4.2.0,<5.0.0)",
     "scikit-learn (>=1.7.2,<2.0.0)",
-    "accelerate (>=1.10.1,<2.0.0)"
+    "accelerate (>=1.10.1,<2.0.0)",
+    "fastapi[standard] (>=0.119.0,<0.120.0)",
+    "python-dotenv (>=1.1.1,<2.0.0)",
 ]
 
 
