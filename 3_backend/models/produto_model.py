@@ -50,3 +50,7 @@ class ProdutoModel(BaseModel):
 class ProdutoBuscaModel(BaseModel):
     id: str = Field(alias="_id")
     produto: ProdutoInfoModel
+
+
+class IdOutModel(BaseModel):
+    id: str = Field(alias="_id")

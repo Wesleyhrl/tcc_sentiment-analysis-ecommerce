@@ -14,15 +14,24 @@ class ProdutoService:
         raise HTTPException(
             status_code=404, detail=f"Produto {id} não encontrado")
 
-    async def buscar_produtos(self, titulo: Optional[str] = None, url: Optional[str] = None, limit: int = 50, skip: int = 0):
+    async def buscar_produto_url(self, url: str):
+
+        projection = {
+            "_id": 1
+        }
+
+        produto = await self.collection.find_one({"produto.url": url}, projection)
+        if produto:
+            return produto
+        raise HTTPException(
+            status_code=404, detail=f"Produto com URL {url} não encontrado")
+
+    async def buscar_produtos(self, titulo: str, limit: int = 50, skip: int = 0):
         # Construir query base
         query = {}
 
-        if url:
-            query["produto.url"] = {"$regex": url}
-        else:
-            query["produto.titulo"] = {
-                "$regex": titulo,  "$options": "i"}  # case-insensitive
+        query["produto.titulo"] = {
+            "$regex": titulo,  "$options": "i"}  # case-insensitive
 
         # Se nenhum parâmetro foi fornecido
         if not query:
