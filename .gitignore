@@ -6,3 +6,4 @@ anotacoes.txt
 .venv
 __pycache__
 .env
+.vscode
