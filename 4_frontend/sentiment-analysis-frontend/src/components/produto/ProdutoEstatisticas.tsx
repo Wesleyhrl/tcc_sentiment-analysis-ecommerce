@@ -1,5 +1,6 @@
 'use client'
 
+import { Star } from 'lucide-react';
 import { Estatisticas } from '@/types/produtos'
 import { Progress } from '@/components/ui/progress'
 import { Card, CardContent } from '@/components/ui/card'
@@ -32,7 +33,10 @@ export default function ProdutoEstatisticas({ estatisticas }: { estatisticas: Es
       <div className="grid md:grid-cols-2 gap-6">
         <div className="space-y-2">
           <p><strong>Total de avaliações:</strong> {estatisticas.total_avaliacoes}</p>
-          <p><strong>Média de nota:</strong> {estatisticas.media_nota.toFixed(2)} ⭐</p>
+          <p>
+          <strong>Média de nota:</strong> {estatisticas.media_nota.toFixed(2)} 
+          <Star className='inline pb-1' size={25} color="#ffea00" strokeWidth={3.5} absoluteStrokeWidth  />
+          </p>
           <p><strong>Sentimento predominante:</strong>
             <span className="capitalize ml-1 font-medium text-primary">{estatisticas.sentimento_predominante}</span>
           </p>
