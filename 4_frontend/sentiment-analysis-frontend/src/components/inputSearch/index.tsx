@@ -2,28 +2,22 @@
 import { Search } from 'lucide-react';
 
 interface InputSearchProps {
-  value: string;
-  onChange: (value: string) => void;
-  onSearch: () => void;
+  searchAction: (formData: FormData) => void;
 }
 
-export default function InputSearch({ value, onChange, onSearch }: InputSearchProps) {
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSearch();
-  };
+export default function InputSearch({ searchAction }: InputSearchProps) {
 
   return (
-    <form onSubmit={handleSubmit} className="flex w-full max-w-lg items-center">
+    <form action={searchAction} className="flex w-full max-w-lg items-center">
       <div className="relative w-full">
         <label htmlFor="search" className="sr-only">
           Buscar
         </label>
         <input
+          required
           id="search"
+          name="search"
           type="search"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
           placeholder="Digite 'Código' ou 'Nome' ou 'Link' do produto"
           className="w-full rounded-tl-lg rounded-bl-lg border border-gray-300 bg-gray-50 py-2.5 pl-10 pr-4 text-sm 
           text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white 
