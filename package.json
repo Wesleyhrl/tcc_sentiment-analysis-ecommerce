@@ -1,0 +1,19 @@
+{
+  "name": "tcc_sentiment-analysis-ecommerce",
+  "scripts": {
+    "app": "npx concurrently \"npm run start-backend\" \"npm run start-frontend\"",
+
+
+    "start-backend": "cd 3_backend && uvicorn main:app --reload",
+    "start-frontend": "cd 4_frontend/sentiment-analysis-frontend && npm run dev",
+
+    "scrape": "cd 1_coleta && poetry run python main.py",
+
+    "fine-tunning": "cd 2_analise && cd fine-tunning && poetry run python fine_tuning.py",
+
+    "analyze": "cd 2_analise && poetry run python main.py"
+  },
+  "devDependencies": {
+    "concurrently": "^8.0.0"
+  }
+}
