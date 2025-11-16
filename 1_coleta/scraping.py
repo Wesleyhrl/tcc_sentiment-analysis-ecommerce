@@ -20,6 +20,7 @@ options.add_argument("--blink-settings=imagesEnabled=false")
 def init_driver():
     global driver, wait
     driver = webdriver.Chrome(options=options)
+    time.sleep(2)  # Espera o driver iniciar
     wait = WebDriverWait(driver, 15)
 
 
@@ -112,6 +113,9 @@ def scrape_produto(url: str):
     # --- Avaliações ---
     pagina_atual = 1
     review_id = 1
+
+    avaliacoes_unicas = set()  #evita avaliações duplicadas
+
     while True:
         try:
             review_containers = wait.until(EC.presence_of_all_elements_located(
@@ -148,22 +152,45 @@ def scrape_produto(url: str):
             except:
                 titulo_avaliacao = ""
 
-            dados_produto["avaliacoes"].append({
-                "id": review_id,
-                "pagina": pagina_atual,
-                "autor": autor,
-                "nota": nota,
-                "data": data,
-                "titulo": titulo_avaliacao,
-                "comentario": comentario
-            })
-            review_id += 1
+            # chave única para evitar duplicatas
+            chave = f"{autor}-{data}-{titulo_avaliacao}-{comentario}"
+            # verifica se já existe essa avaliação antes de adicionar ao produto
+            if chave not in avaliacoes_unicas:
+                # adiciona chave ao conjunto de avaliações únicas
+                avaliacoes_unicas.add(chave)
+
+                dados_produto["avaliacoes"].append({
+                    "id": review_id,
+                    "pagina": pagina_atual,
+                    "autor": autor,
+                    "nota": nota,
+                    "data": data,
+                    "titulo": titulo_avaliacao,
+                    "comentario": comentario
+                })
+                review_id += 1
 
         try:
             next_button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "li.next")))
             if "disabled" in next_button.get_attribute("class"):
                 break
+            #salva primeiro comentário da página atual
+            try:
+                first_comment_before = review_containers[0].text.strip()
+            except:
+                first_comment_before = None
+            # Clica na próxima página
             driver.execute_script("arguments[0].click();", next_button.find_element(By.CSS_SELECTOR, "a.nextLink"))
+            # Espera a página carregar verificando se o primeiro comentário mudou
+            wait.until(
+                lambda d: (
+                    d.find_elements(By.CSS_SELECTOR, "div.sc-9e789c55-0.grUenq")
+                    and d.find_elements(By.CSS_SELECTOR, "div.sc-9e789c55-0.grUenq")[0].text.strip() != first_comment_before
+                )
+            )
+       
+
+
             pausa(2, 4) # Pausa entre páginas
             pagina_atual += 1
         except:
