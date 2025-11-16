@@ -1,10 +1,13 @@
 import logging
 import os
+from datetime import datetime
 
 def setup_logger():
 
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+
     log_dir = "./1_coleta/logs"
-    log_file = os.path.join(log_dir, "scraping.log")
+    log_file = os.path.join(log_dir, f"scraping_{timestamp}.log")
 
     # Criar pasta logs se não existir
     os.makedirs(log_dir, exist_ok=True)
