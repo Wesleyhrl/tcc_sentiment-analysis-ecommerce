@@ -6,7 +6,7 @@ def setup_logger():
 
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
-    log_dir = "./1_coleta/logs"
+    log_dir = "./logs"
     log_file = os.path.join(log_dir, f"scraping_{timestamp}.log")
 
     # Criar pasta logs se não existir
