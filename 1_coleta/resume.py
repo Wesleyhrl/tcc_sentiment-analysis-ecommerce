@@ -1,5 +1,4 @@
 import datetime
-import os
 from pymongo import MongoClient
 
 # Variáveis globais para armazenar as estatísticas

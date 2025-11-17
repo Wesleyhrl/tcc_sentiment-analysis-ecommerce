@@ -1,5 +1,4 @@
 import sys
-import time
 from sitemap import process_sitemap
 from scraping import load_sitemap_urls, scrape_produto, save_produto, init_driver, close_driver
 from logger_config import setup_logger
