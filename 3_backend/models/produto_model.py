@@ -1,5 +1,14 @@
-from typing import List, Optional
+from typing import List, Optional, TypeVar, Generic
 from pydantic import BaseModel, Field
+
+T = TypeVar('T')
+
+class PaginationResponse(BaseModel, Generic[T]):
+    items: List[T]
+    total: int
+    page: int
+    size: int
+    pages: int
 
 class SentimentoModel(BaseModel):
     label: str

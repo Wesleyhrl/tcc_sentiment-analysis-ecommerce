@@ -1,7 +1,7 @@
 from typing import Optional
 from fastapi import APIRouter, Body, Query, Request, status
 from fastapi.responses import JSONResponse
-from models.produto_model import ProdutoModel, ProdutoBuscaModel, IdOutModel
+from models.produto_model import PaginationResponse, ProdutoModel, ProdutoBuscaModel, IdOutModel
 from services.produto_service import ProdutoService
 
 router = APIRouter(prefix="/produtos", tags=["Produtos"])
@@ -22,22 +22,18 @@ async def obter_id_produto_pela_url(request: Request, url: str = Query(descripti
     return await service.buscar_produto_url(url)
 
 
-@router.get("/buscar/", response_model=list[ProdutoBuscaModel])
+@router.get("/buscar/", response_model= PaginationResponse[ProdutoBuscaModel])
 async def buscar_produtos(
     request: Request,
-    titulo: str = Query(description="Buscar por título"),
-    limit: Optional[int] = Query(50, ge=1, le=100, description="Número máximo de produtos a retornar"),
-    skip: Optional[int] = Query(0, ge=0, description="Número de produtos a pular")
+    titulo: str = Query(..., description="Buscar por título"),
+    page: int = Query(1, ge=1, description="Número da página (começa em 1)"),
+    page_size: int = Query(50, ge=1, le=100, description="Itens por página")
 ):
     """
-    Busca produtos por título.
-
+    Busca produtos por título com paginação.
     - **titulo**: Busca parcial no título do produto (case-insensitive)
-    - **limit**: Limita o número de resultados retornados (padrão: 50, máximo: 100)
-    - **skip**: Número de resultados a pular (padrão: 0)
-
-    Retorna apenas informações básicas do produto.
+    - **page**: Número da página atual (começa em 1)
+    - **page_size**: Número de itens por página (padrão: 50, máximo: 100)
     """
     service = ProdutoService(request.app.database)
-    return await service.buscar_produtos(titulo=titulo, limit=limit, skip=skip)
-
+    return await service.buscar_produtos(titulo=titulo, page=page, page_size=page_size)

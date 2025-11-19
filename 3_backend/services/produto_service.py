@@ -1,3 +1,4 @@
+import math
 from typing import Optional
 from fastapi import HTTPException
 from pymongo import ReturnDocument
@@ -26,19 +27,33 @@ class ProdutoService:
         raise HTTPException(
             status_code=404, detail=f"Produto com URL {url} não encontrado")
 
-    async def buscar_produtos(self, titulo: str, limit: int = 50, skip: int = 0):
+    async def buscar_produtos(self, titulo: str, page: int, page_size: int):
         # Construir query base
         query = {}
+        palavras = titulo.split()
+        busca_formatada = " ".join([f'"{p}"' for p in palavras])
+        
+        # Agora passamos a string cheia de aspas para o banco
+        query = {"$text": {"$search": busca_formatada}}
 
-        query["produto.titulo"] = {
-            "$regex": titulo,  "$options": "i"}  # case-insensitive
+        # Contagem (usando índice)
+        total_items = await self.collection.count_documents(query)
 
         # Se nenhum parâmetro foi fornecido
         if not query:
             raise HTTPException(
                 status_code=400,
-                detail="É necessário fornecer pelo menos um parâmetro de busca (titulo ou url)"
+                detail="É necessário fornecer pelo menos um parâmetro de busca (titulo)."
             )
+
+        if total_items == 0:
+            return {
+                "items": [],
+                "total": 0,
+                "page": page,
+                "size": page_size,
+                "pages": 0
+            }
 
         # Projeção para excluir campos desnecessários e otimizar a consulta
         projection = {
@@ -46,13 +61,19 @@ class ProdutoService:
             "estatisticas": 0,
         }
 
+        skip = (page - 1) * page_size
+
         # Executar a busca
-        produtos = await self.collection.find(query, projection).skip(skip).limit(limit).to_list()
+        cursor = self.collection.find(query, projection).skip(skip).limit(page_size)
+        produtos = await cursor.to_list(length=page_size)
 
-        if not produtos:
-            raise HTTPException(
-                status_code=404,
-                detail="Nenhum produto encontrado com os critérios fornecidos"
-            )
+        # cálculos da paginação
+        total_pages = math.ceil(total_items / page_size)
 
-        return produtos
+        return {
+            "items": produtos,
+            "total": total_items,
+            "page": page,
+            "size": page_size,
+            "pages": total_pages
+        }
