@@ -51,7 +51,7 @@ class ProdutoService:
                 "items": [],
                 "total": 0,
                 "page": page,
-                "size": page_size,
+                "page_size": page_size,
                 "pages": 0
             }
 
@@ -74,6 +74,6 @@ class ProdutoService:
             "items": produtos,
             "total": total_items,
             "page": page,
-            "size": page_size,
+            "page_size": page_size,
             "pages": total_pages
         }

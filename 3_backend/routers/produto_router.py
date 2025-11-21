@@ -1,7 +1,8 @@
 from typing import Optional
 from fastapi import APIRouter, Body, Query, Request, status
 from fastapi.responses import JSONResponse
-from models.produto_model import PaginationResponse, ProdutoModel, ProdutoBuscaModel, IdOutModel
+from models.produto_model import ProdutoModel, ProdutoBuscaModel, IdOutModel
+from models.pagination_model import PaginationResponse
 from services.produto_service import ProdutoService
 
 router = APIRouter(prefix="/produtos", tags=["Produtos"])
