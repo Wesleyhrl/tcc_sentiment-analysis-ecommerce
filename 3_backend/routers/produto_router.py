@@ -1,12 +1,40 @@
-from typing import Optional
+from typing import Optional, List
 from fastapi import APIRouter, Body, Query, Request, status
 from fastapi.responses import JSONResponse
 from models.produto_model import ProdutoModel, ProdutoBuscaModel, IdOutModel
 from models.pagination_model import PaginationResponse
 from services.produto_service import ProdutoService
+from models.navegacao_model import NavegacaoList
 
 router = APIRouter(prefix="/produtos", tags=["Produtos"])
 
+
+@router.get("/navegacao/", response_model=NavegacaoList)
+async def navegar_categorias(
+    request: Request,
+    filtro: Optional[str] = Query(
+        None, description="Caminho base para buscar as subcategorias (ex: 'hardware/coolers'). Se omitido, retorna os Departamentos raiz.")
+):
+    """
+    Retorna a lista de categorias do próximo nível hierárquico.
+
+    Este endpoint permite navegar na árvore de produtos progressivamente.
+
+    **Como utilizar:**
+
+    * **Nível 1 (Raiz):** * *Requisição:* `GET /produtos/navegacao/` (sem parâmetros).
+        * *Retorno:* Lista de Departamentos (ex: "Hardware", "Periféricos").
+
+    * **Nível 2 (Categorias):** * *Requisição:* `GET /produtos/navegacao/?filtro=hardware`
+        * *Retorno:* Lista de categorias dentro de Hardware (ex: "Coolers", "SSD").
+
+    * **Nível 3 (Subcategorias):** * *Requisição:* `GET /produtos/navegacao/?filtro=hardware/coolers`
+        * *Retorno:* Lista de itens dentro de Coolers (ex: "Fan", "Water Cooler").
+
+    **Nota:** O campo `caminho_completo` da resposta deve ser usado como o valor do parâmetro `filtro` na próxima chamada.
+    """
+    service = ProdutoService(request.app.database)
+    return await service.obter_navegacao(nivel_anterior=filtro)
 
 
 @router.get("/{id}", response_model=ProdutoModel)
@@ -23,7 +51,7 @@ async def obter_id_produto_pela_url(request: Request, url: str = Query(descripti
     return await service.buscar_produto_url(url)
 
 
-@router.get("/buscar/", response_model= PaginationResponse[ProdutoBuscaModel])
+@router.get("/buscar/", response_model=PaginationResponse[ProdutoBuscaModel])
 async def buscar_produtos(
     request: Request,
     titulo: str = Query(..., description="Buscar por título"),

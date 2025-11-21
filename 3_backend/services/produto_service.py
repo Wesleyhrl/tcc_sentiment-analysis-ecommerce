@@ -2,11 +2,62 @@ import math
 from typing import Optional
 from fastapi import HTTPException
 from pymongo import ReturnDocument
-
+from utils.localizacao_utils import extrair_partes_url
 
 class ProdutoService:
     def __init__(self, db):
         self.collection = db.get_collection("produtos")
+
+    async def obter_navegacao(self, nivel_anterior: str = None):
+        """
+        Usa 'distinct' do MongoDB para buscar apenas caminhos únicos, sem carregar produtos.
+        """
+        
+        # Define o filtro (Regex)
+        # Se o nivel_anterior for "hardware", buscamos tudo que tem "hardware" na URL
+        query = {}
+        if nivel_anterior:
+            # O regex garante que estamos olhando dentro da pasta certa
+            query["produto.localizacao"] = {"$regex": f".*/{nivel_anterior}/.*"}
+
+        # DISTINCT Mongo retorna apenas as strings de localização únicas.
+        urls_unicas = await self.collection.distinct("produto.localizacao", query)
+
+        # Processamento Rápido em Python (String Parsing)
+        categorias_encontradas = set()
+        
+        # Define qual índice da URL queremos pegar (o próximo nível)
+        indice_alvo = 0
+        if nivel_anterior:
+            partes_anteriores = extrair_partes_url(nivel_anterior)
+            indice_alvo = len(partes_anteriores)
+
+        resultado = []
+
+        for url in urls_unicas:
+            # Usa sua função utilitária existente
+            partes = extrair_partes_url(url)
+            
+            # Verifica se a URL tem profundidade para ter um filho
+            if len(partes) > indice_alvo:
+                nome_categoria = partes[indice_alvo]
+                
+                # O 'set' garante que não adicionaremos "coolers" duas vezes
+                if nome_categoria not in categorias_encontradas:
+                    categorias_encontradas.add(nome_categoria)
+                    
+                    # Monta o objeto de resposta
+                    caminho_completo = f"{nivel_anterior}/{nome_categoria}" if nivel_anterior else nome_categoria
+                    
+                    resultado.append({
+                        "nome_exibicao": nome_categoria,
+                        "caminho_completo": caminho_completo
+                    })
+
+        # Ordena alfabeticamente
+        resultado.sort(key=lambda x: x["nome_exibicao"])
+        
+        return resultado
 
     async def buscar_produto_id(self, id: str):
         produto = await self.collection.find_one({"_id": id})
