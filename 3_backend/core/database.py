@@ -20,7 +20,7 @@ async def lifespan(app: FastAPI):
     # Cria índice de TEXTO no campo 'produto.titulo' para buscas rápidas
     await produtos_collection.create_index([("produto.titulo", TEXT)], name="idx_text_produto_titulo")
     # Cria um índice de ordenação ascendente no campo 'produto.localizacao' para consultas rápidas por localização.
-    await produtos_collection.create_index([("produto.localizacao", 1)])
+    await produtos_collection.create_index([("produto.localizacao", 1)], name="idx_produto_localizacao")
     
     print("Conexão com MongoDB estabelecida e índices verificados/criados.")
 
