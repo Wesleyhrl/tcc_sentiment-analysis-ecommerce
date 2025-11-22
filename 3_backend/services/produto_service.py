@@ -1,4 +1,5 @@
 import math
+import re
 from typing import Optional
 from fastapi import HTTPException
 from pymongo import ReturnDocument
@@ -128,3 +129,49 @@ class ProdutoService:
             "page_size": page_size,
             "pages": total_pages
         }
+
+    async def buscar_produtos_por_localizacao(self, localizacao: str, page: int, page_size: int):
+            """
+            Busca produtos que contenham o trecho da localização na URL.
+            Ex: localizacao="hardware" trará itens com URL ".../hardware/..."
+            """
+            
+            # Escapar caracteres especiais para evitar erro no Regex e garantir segurança
+            localizacao_escapada = re.escape(localizacao)
+
+            # Regex: Procura pelo termo precedido por uma barra (para garantir que é uma pasta)
+            query = {"produto.localizacao": {"$regex": f".*/{localizacao_escapada}", "$options": "i"}}
+
+            # Contagem total para paginação
+            total_items = await self.collection.count_documents(query)
+
+            if total_items == 0:
+                return {
+                    "items": [],
+                    "total": 0,
+                    "page": page,
+                    "page_size": page_size,
+                    "pages": 0
+                }
+
+            # Projeção otimizada (igual à busca por título)
+            projection = {
+                "avaliacoes": 0,
+                "estatisticas": 0,
+            }
+
+            skip = (page - 1) * page_size
+
+            # Executa a query ordenando por classificação ou titulo (opcional, aqui pus padrão)
+            cursor = self.collection.find(query, projection).skip(skip).limit(page_size)
+            produtos = await cursor.to_list(length=page_size)
+
+            total_pages = math.ceil(total_items / page_size)
+
+            return {
+                "items": produtos,
+                "total": total_items,
+                "page": page,
+                "page_size": page_size,
+                "pages": total_pages
+            }        

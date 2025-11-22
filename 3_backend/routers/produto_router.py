@@ -66,3 +66,18 @@ async def buscar_produtos(
     """
     service = ProdutoService(request.app.database)
     return await service.buscar_produtos(titulo=titulo, page=page, page_size=page_size)
+
+@router.get("/listar/localizacao/", response_model=PaginationResponse[ProdutoBuscaModel])
+async def listar_produtos_por_localizacao(
+    request: Request,
+    filtro: str = Query(..., description="Caminho da categoria (ex: 'hardware' ou 'hardware/ssd-2-5')"),
+    page: int = Query(1, ge=1, description="Número da página"),
+    page_size: int = Query(50, ge=1, le=100, description="Itens por página")
+):
+    """
+    Lista produtos pertencentes a uma categoria específica.
+    
+    - **filtro**: Parte da URL que representa a categoria (obtido na rota de navegação).
+    """
+    service = ProdutoService(request.app.database)
+    return await service.buscar_produtos_por_localizacao(localizacao=filtro, page=page, page_size=page_size)
