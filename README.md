@@ -48,7 +48,7 @@ O projeto utiliza **Poetry** para gerenciar as dependências. Siga os passos par
 
 **Observação:**
 * O comando `poetry install` criará automaticamente um ambiente virtual para o projeto.
-* Se for necessário ativar o ambiente virtual manualmente, utilize: `poetry env activate`.
+* Se for necessário ativar o ambiente virtual manualmente, utilize: `poetry env activate`. Este comando imprimirá a linha exata de código que você deve usar para ativar o ambiente, copie e cole a linha de código gerada e execute-a.
 
 ### Node
 
