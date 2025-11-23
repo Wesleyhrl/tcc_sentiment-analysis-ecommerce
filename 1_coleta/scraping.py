@@ -1,17 +1,20 @@
 import time
 import random
 from selenium import webdriver
+from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from pymongo import MongoClient
 from selenium.common.exceptions import  WebDriverException
+from selenium.common.exceptions import TimeoutException
 from pymongo.errors import PyMongoError
 
 
 # CONFIGURAÇÕES SELENIUM
 options = webdriver.ChromeOptions()
-options.add_argument("--headless=new")
+#options.add_argument("--headless=new")
+options.add_argument("--window-size=1920,1080")
 options.add_argument("--no-sandbox")
 options.add_argument("--disable-dev-shm-usage")
 options.add_argument("--disable-notifications")
@@ -21,18 +24,35 @@ def init_driver():
     global driver, wait
     driver = webdriver.Chrome(options=options)
     time.sleep(2)  # Espera o driver iniciar
-    wait = WebDriverWait(driver, 15)
+    wait = WebDriverWait(driver, 20)
 
 
 def close_driver():
     global driver
     driver.quit()
+    time.sleep(1)
 
 # CONEXÃO MONGODB
 client = MongoClient("mongodb://localhost:27017/")
 db = client["kabum_scraping"]
 collection = db["produtos"]
 sitemaps_collection = db["sitemaps"]
+
+def scroll_driver(element):
+    """Rola a página até o elemento especificado"""
+
+    ActionChains(driver)\
+        .scroll_to_element(element)\
+        .perform()
+def scroll_to_bottom():
+    """Rola a página até o final"""
+    # Obtém a altura total da página
+    total_height = driver.execute_script("return document.body.scrollHeight")
+    
+    # Rola até o final usando ActionChains
+    ActionChains(driver)\
+        .scroll_by_amount(0, total_height)\
+        .perform()
 
 def pausa(min_seg=1, max_seg=4):
     """Pausa aleatória entre min_seg e max_seg segundos"""
@@ -57,6 +77,8 @@ def scrape_produto(url: str):
     except WebDriverException as e:
         raise RuntimeError(f"Falha ao carregar página {url}: {e}")
     dados_produto = {"produto": {}, "avaliacoes": []}
+    # Rola para garantir carregamento de lazy load
+    scroll_to_bottom()
 
     # --- Produto ---
     try:
@@ -64,10 +86,7 @@ def scrape_produto(url: str):
             (By.XPATH, '//*[@id="main-content"]/div[1]/div[1]/div[1]/div[2]/div/h1'))
         ).text.strip()
         dados_produto["produto"]["titulo"] = titulo
-    except:
-        dados_produto["produto"]["titulo"] = None
 
-    try:
         breadcrumb_nav = wait.until(EC.presence_of_element_located(
             (By.CSS_SELECTOR, "nav[aria-label='Breadcrumb']"))
         )
@@ -76,9 +95,9 @@ def scrape_produto(url: str):
             By.TAG_NAME, "a").get_attribute("href")
         dados_produto["produto"]["codigo"] = breadcrumb_items[-1].text.replace(
             "Código", "").strip()
-    except:
-        dados_produto["produto"]["localizacao"] = None
-        dados_produto["produto"]["codigo"] = None
+    except Exception as e:
+        raise RuntimeError(f"Falha ao extrair informações básicas do produto: {e}")
+        
 
     try:
         loja = wait.until(EC.presence_of_element_located(
@@ -104,103 +123,101 @@ def scrape_produto(url: str):
         dados_produto["produto"]["informacoes_tecnicas"] = None
     
     try:
-        review_section = wait.until(EC.presence_of_element_located((By.ID, "reviewsSection")))
-        nota_review = review_section.find_element(By.CSS_SELECTOR, "span.sc-781b7e7f-1.hdvIZL").text.strip()
+        review_element = wait.until(EC.presence_of_element_located((By.ID, "reviewsSection")))
+        scroll_driver(review_element)
+        nota_element = wait.until(lambda d: d.find_element(By.CSS_SELECTOR, "span.sc-781b7e7f-1.hdvIZL"))
+        # Aguarda até que a nota seja diferente de vazio
+        wait.until(lambda _: nota_element.text.strip() != "")
+
+        nota_review = nota_element.text.strip()
+
         dados_produto["produto"]["classificacao"] = float(nota_review)
-    except:
-        tech_info = None
+    except TimeoutException:
+        dados_produto["produto"]["classificacao"] = 0    
+    except Exception as e:
+        dados_produto["produto"]["classificacao"] = 0
+        
 
     # --- Avaliações ---
     pagina_atual = 1
     review_id = 1
 
     avaliacoes_unicas = set()  #evita avaliações duplicadas
-
-    while True:
-        try:
-            review_containers = wait.until(EC.presence_of_all_elements_located(
-                (By.CSS_SELECTOR, "div.sc-9e789c55-0.grUenq"))
-            )
-        except:
-            break
-
-        for container in review_containers:
+    
+    tentativas_nav = 0
+    
+    # Se a nota for 0, nem tenta buscar reviews
+    if dados_produto["produto"]["classificacao"] > 0:
+        while True:
             try:
-                autor = container.find_element(By.CSS_SELECTOR, "span.sc-d5f48f0e-1.heSJqR").text.strip()
-            except:
-                autor = "Anônimo"
-
-            try:
-                nota = container.find_element(By.CSS_SELECTOR, "div.ratingStarsContainer").get_attribute("aria-label")
-                nota = nota.split(":")[1].strip() if nota else None
-            except:
-                nota = None
-
-            try:
-                data = container.find_element(By.CSS_SELECTOR, "span.sc-d5f48f0e-2.brbMqG").text.strip()
-                data = data.replace("Avaliado em ", "")
-            except:
-                data = None
-
-            try:
-                comentario = container.find_element(By.CSS_SELECTOR, "span.sc-9e789c55-8.eUnvhx").text.strip()
-            except:
-                comentario = ""
-
-            try:
-                titulo_avaliacao = container.find_element(By.CSS_SELECTOR, "h5.sc-d5f48f0e-3.gByuuW").text.strip()
-            except:
-                titulo_avaliacao = ""
-
-            # chave única para evitar duplicatas
-            chave = f"{autor}-{data}-{titulo_avaliacao}-{comentario}"
-            # verifica se já existe essa avaliação antes de adicionar ao produto
-            if chave not in avaliacoes_unicas:
-                # adiciona chave ao conjunto de avaliações únicas
-                avaliacoes_unicas.add(chave)
-
-                dados_produto["avaliacoes"].append({
-                    "id": review_id,
-                    "pagina": pagina_atual,
-                    "autor": autor,
-                    "nota": nota,
-                    "data": data,
-                    "titulo": titulo_avaliacao,
-                    "comentario": comentario
-                })
-                review_id += 1
-
-        try:
-            next_button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "li.next")))
-            if "disabled" in next_button.get_attribute("class"):
-                break
-            #salva primeiro comentário da página atual
-            try:
-                first_comment_before = review_containers[0].text.strip()
-            except:
-                first_comment_before = None
-            # Clica na próxima página
-            driver.execute_script("arguments[0].click();", next_button.find_element(By.CSS_SELECTOR, "a.nextLink"))
-            # Espera a página carregar verificando se o primeiro comentário mudou
-            wait.until(
-                lambda d: (
-                    d.find_elements(By.CSS_SELECTOR, "div.sc-9e789c55-0.grUenq")
-                    and d.find_elements(By.CSS_SELECTOR, "div.sc-9e789c55-0.grUenq")[0].text.strip() != first_comment_before
+                # Tenta pegar os containers de review
+                review_containers = wait.until(EC.presence_of_all_elements_located(
+                    (By.CSS_SELECTOR, "div.sc-9e789c55-0.grUenq"))
                 )
-            )
-       
+                
+                # Reseta contador de erro de navegação se carregou container com sucesso
+                tentativas_nav = 0 
 
+                for container in review_containers:
+                    try:
+                        autor = container.find_element(By.CSS_SELECTOR, "span.sc-d5f48f0e-1.heSJqR").text.strip()
+                        nota_attr = container.find_element(By.CSS_SELECTOR, "div.ratingStarsContainer").get_attribute("aria-label")
+                        nota = nota_attr.split(":")[1].strip() if nota_attr else None
+                        data = container.find_element(By.CSS_SELECTOR, "span.sc-d5f48f0e-2.brbMqG").text.replace("Avaliado em ", "").strip()
+                        comentario = container.find_element(By.CSS_SELECTOR, "span.sc-9e789c55-8.eUnvhx").text.strip()
+                        titulo_av = container.find_element(By.CSS_SELECTOR, "h5.sc-d5f48f0e-3.gByuuW").text.strip()
 
-            pausa(2, 4) # Pausa entre páginas
-            pagina_atual += 1
-        except:
-            break
+                        chave = f"{autor}-{data}-{titulo_av}-{comentario[:30]}" # Chave um pouco mais curta
+                        if chave not in avaliacoes_unicas:
+                            avaliacoes_unicas.add(chave)
+                            dados_produto["avaliacoes"].append({
+                                "id": review_id,
+                                "pagina": pagina_atual,
+                                "autor": autor,
+                                "nota": nota,
+                                "data": data,
+                                "titulo": titulo_av,
+                                "comentario": comentario
+                            })
+                            review_id += 1
+                    except Exception:
+                        continue # Se falhar 1 review específico, pula ele
+
+                # --- Paginação ---
+                try:
+                    next_li = driver.find_element(By.CSS_SELECTOR, "li.next")
+                    if "disabled" in next_li.get_attribute("class"):
+                        break # Fim das páginas
+                    
+                    next_button = next_li.find_element(By.TAG_NAME, "a")
+                    
+                    # Guarda estado antes de clicar
+                    first_text_before = review_containers[0].text.strip()
+                    
+                    driver.execute_script("arguments[0].click();", next_button)
+                    
+                    # Espera a lista mudar
+                    wait.until(lambda d: 
+                        d.find_elements(By.CSS_SELECTOR, "div.sc-9e789c55-0.grUenq")[0].text.strip() != first_text_before
+                    )
+                    
+                    pausa(2, 4)
+                    pagina_atual += 1
+
+                except Exception as e:
+                    break
+            
+            except Exception as e:
+                # Erro genérico no loop de reviews
+                tentativas_nav += 1
+                if tentativas_nav >= 2:
+                    break
 
     dados_produto["produto"]["total_avaliacoes_coletadas"] = len(dados_produto["avaliacoes"])
     dados_produto["produto"]["url"] = url
     dados_produto["produto"]["data_extracao"] = time.strftime("%Y-%m-%d %H:%M:%S")
 
-    pausa(3, 6) # Pausa entre produtos
+    pausa(2, 5) # Pausa entre produtos
 
     return dados_produto
 

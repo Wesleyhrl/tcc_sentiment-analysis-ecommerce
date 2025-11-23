@@ -63,7 +63,7 @@ def main():
                 total_erros += 1
                 atualizar_estatisticas(erros=total_erros)
                 logger.warning(f"Falha ao extrair {url} (tentativa {tentativas}/{max_tentativas}): {e}")
-                if tentativas == 0:
+                if tentativas < max_tentativas:
                     logger.info("Reiniciando o driver...")
                     close_driver()
                     init_driver()
