@@ -1,6 +1,5 @@
-from typing import Optional, List
-from fastapi import APIRouter, Body, Query, Request, status
-from fastapi.responses import JSONResponse
+from typing import Optional
+from fastapi import APIRouter, Query, Request
 from models.produto_model import ProdutoModel, ProdutoBuscaModel
 from models.pagination_model import PaginationResponse
 from services.produto_service import ProdutoService

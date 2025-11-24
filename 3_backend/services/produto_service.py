@@ -1,8 +1,6 @@
 import math
 import re
-from typing import Optional
 from fastapi import HTTPException
-from pymongo import ReturnDocument
 from utils.localizacao_utils import extrair_partes_url
 
 class ProdutoService:
