@@ -2,10 +2,6 @@
 import { redirect } from 'next/navigation';
 import SearchInput from '../components/inputSearch/index';
 
-interface IdData{
-  _id: string;
-}
-
 async function searchProducts(formData: FormData) {
   'use server';
   
