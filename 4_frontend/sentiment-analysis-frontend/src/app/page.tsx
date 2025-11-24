@@ -10,7 +10,7 @@ async function searchProducts(formData: FormData) {
   'use server';
   
   const searchValue = formData.get('search') as string;
-  
+
   if (/^\d+$/.test(searchValue)) {
     redirect(`/produto/${searchValue}`);
   }
@@ -18,20 +18,16 @@ async function searchProducts(formData: FormData) {
   const kabumLinkRegex = /https?:\/\/(www\.)?kabum\.com\.br\/produto\/(\d+)/;
   const match = searchValue.match(kabumLinkRegex);
   
-
-  if(match){
-      const API_BASE_URL = process.env.API_BASE_URL
-      const response = await fetch(`${API_BASE_URL}/produtos/url/?url=${searchValue}`, { cache: 'no-store' })
-      const data: IdData = await response.json()
-      console.log(data._id)
-      redirect(`/produto/${data._id}`);
+  if (match && match[2]) {
+      const extractedId = match[2];
+      console.log(`ID Extraído da URL: ${extractedId}`); // Opcional: para debug
+      redirect(`/produto/${extractedId}`);
   }
-
 }
 
-export default function Home() {
+export default async function Home() {
   return (
-    <div className="min-h-[calc(100vh-64px)] flex flex-col items-center justify-center bg-background p-4">
+    <div className="min-h-[calc(100vh-64px)] flex flex-col items-center bg-background p-4">
       <SearchInput searchAction={searchProducts} />
     </div>
   );
