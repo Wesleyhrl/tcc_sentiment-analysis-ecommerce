@@ -67,18 +67,6 @@ class ProdutoService:
         raise HTTPException(
             status_code=404, detail=f"Produto {id} não encontrado")
 
-    async def buscar_produto_url(self, url: str):
-
-        projection = {
-            "_id": 1
-        }
-
-        produto = await self.collection.find_one({"produto.url": url}, projection)
-        if produto:
-            return produto
-        raise HTTPException(
-            status_code=404, detail=f"Produto com URL {url} não encontrado")
-
     async def buscar_produtos(self, titulo: str, page: int, page_size: int):
         # Construir query base
         query = {}

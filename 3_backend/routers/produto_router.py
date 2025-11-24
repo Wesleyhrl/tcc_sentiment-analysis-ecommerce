@@ -1,7 +1,7 @@
 from typing import Optional, List
 from fastapi import APIRouter, Body, Query, Request, status
 from fastapi.responses import JSONResponse
-from models.produto_model import ProdutoModel, ProdutoBuscaModel, IdOutModel
+from models.produto_model import ProdutoModel, ProdutoBuscaModel
 from models.pagination_model import PaginationResponse
 from services.produto_service import ProdutoService
 from models.navegacao_model import NavegacaoList
@@ -42,14 +42,6 @@ async def obter_produto(id: str, request: Request):
     """Obtém detalhes completos de um produto pelo seu ID."""
     service = ProdutoService(request.app.database)
     return await service.buscar_produto_id(id)
-
-
-@router.get("/url/", response_model=IdOutModel)
-async def obter_id_produto_pela_url(request: Request, url: str = Query(description="Buscar por URL")):
-    """Obtém o ID de um produto pela sua URL."""
-    service = ProdutoService(request.app.database)
-    return await service.buscar_produto_url(url)
-
 
 @router.get("/buscar/", response_model=PaginationResponse[ProdutoBuscaModel])
 async def buscar_produtos(
