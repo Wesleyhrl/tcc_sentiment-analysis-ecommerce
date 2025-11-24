@@ -1,10 +1,10 @@
-
 import { redirect } from 'next/navigation';
 import SearchInput from '../components/inputSearch/index';
+import CategoryMenu from '../components/categoryMenu/index';
+import {  Logs  } from 'lucide-react';
 
 async function searchProducts(formData: FormData) {
   'use server';
-  
   const searchValue = formData.get('search') as string;
 
   if (/^\d+$/.test(searchValue)) {
@@ -13,11 +13,10 @@ async function searchProducts(formData: FormData) {
 
   const kabumLinkRegex = /https?:\/\/(www\.)?kabum\.com\.br\/produto\/(\d+)/;
   const match = searchValue.match(kabumLinkRegex);
-  
+
   if (match && match[2]) {
-      const extractedId = match[2];
-      console.log(`ID Extraído da URL: ${extractedId}`); // Opcional: para debug
-      redirect(`/produto/${extractedId}`);
+    const extractedId = match[2];
+    redirect(`/produto/${extractedId}`);
   }
 }
 
@@ -25,6 +24,13 @@ export default async function Home() {
   return (
     <div className="min-h-[calc(100vh-64px)] flex flex-col items-center bg-background p-4">
       <SearchInput searchAction={searchProducts} />
+      <div className="w-full mb-2 mt-10 ">
+        <div className='flex justify-center items-center gap-1 mb-1'>
+         <Logs  strokeWidth={2.80} className='text-[#193f76]' />
+        <span className='text-2xl font-bold uppercase mb-0.5 text-[#193f76]'>Categorias</span>
+        </div>
+        <CategoryMenu />
+      </div>
     </div>
   );
 }
