@@ -61,7 +61,7 @@ async def buscar_produtos(
 @router.get("/listar/localizacao/", response_model=PaginationResponse[ProdutoBuscaModel])
 async def listar_produtos_por_localizacao(
     request: Request,
-    filtro: str = Query(..., description="Caminho da categoria (ex: 'hardware' ou 'hardware/ssd-2-5')"),
+    filtro: str = Query(..., min_length=1, description="Caminho da categoria (ex: 'hardware' ou 'hardware/ssd-2-5')"),
     page: int = Query(1, ge=1, description="Número da página"),
     page_size: int = Query(50, ge=1, le=100, description="Itens por página")
 ):
