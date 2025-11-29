@@ -10,7 +10,6 @@ from selenium.common.exceptions import  WebDriverException
 from selenium.common.exceptions import TimeoutException
 from pymongo.errors import PyMongoError
 
-
 # CONFIGURAÇÕES SELENIUM
 options = webdriver.ChromeOptions()
 options.add_argument("--headless=new")
@@ -23,9 +22,8 @@ options.add_argument("--blink-settings=imagesEnabled=false")
 def init_driver():
     global driver, wait
     driver = webdriver.Chrome(options=options)
-    time.sleep(2)  # Espera o driver iniciar
+    time.sleep(2)
     wait = WebDriverWait(driver, 20)
-
 
 def close_driver():
     global driver
@@ -40,16 +38,12 @@ sitemaps_collection = db["sitemaps"]
 
 def scroll_driver(element):
     """Rola a página até o elemento especificado"""
-
     ActionChains(driver)\
         .scroll_to_element(element)\
         .perform()
 def scroll_to_bottom():
     """Rola a página até o final"""
-    # Obtém a altura total da página
     total_height = driver.execute_script("return document.body.scrollHeight")
-    
-    # Rola até o final usando ActionChains
     ActionChains(driver)\
         .scroll_by_amount(0, total_height)\
         .perform()
@@ -126,9 +120,9 @@ def scrape_produto(url: str):
         review_element = wait.until(EC.presence_of_element_located((By.ID, "reviewsSection")))
         scroll_driver(review_element)
         nota_element = wait.until(lambda d: d.find_element(By.CSS_SELECTOR, "span.sc-781b7e7f-1.hdvIZL"))
+        nota_element = wait.until(lambda d: d.find_element(By.XPATH, '//*[@id="reviewsSection"]//span[contains(text(), "/5")]/preceding-sibling::span'))
         # Aguarda até que a nota seja diferente de vazio
         wait.until(lambda _: nota_element.text.strip() != "")
-
         nota_review = nota_element.text.strip()
 
         dados_produto["produto"]["classificacao"] = float(nota_review)
@@ -137,13 +131,9 @@ def scrape_produto(url: str):
     except Exception as e:
         dados_produto["produto"]["classificacao"] = 0
         
-
     # --- Avaliações ---
     pagina_atual = 1
-    review_id = 1
-
-    avaliacoes_unicas = set()  #evita avaliações duplicadas
-    
+    review_id = 1 
     tentativas_nav = 0
     
     # Se a nota for 0, nem tenta buscar reviews
@@ -151,35 +141,34 @@ def scrape_produto(url: str):
         while True:
             try:
                 # Tenta pegar os containers de review
+                xpath_containers = '//*[@id="reviewsSection"]//div[./button/div/div[@data-testid="ratingStars"]]'
                 review_containers = wait.until(EC.presence_of_all_elements_located(
-                    (By.CSS_SELECTOR, "div.sc-9e789c55-0.grUenq"))
+                    (By.XPATH, xpath_containers))
                 )
-                
-                # Reseta contador de erro de navegação se carregou container com sucesso
-                tentativas_nav = 0 
-
+                # Garante que o container não está vazio
+                if not review_containers[0].text.strip():
+                     pausa(0.5,1.5)
+                     continue # Força o loop a pegar os elementos novamente
+                tentativas_nav = 0
                 for container in review_containers:
                     try:
-                        autor = container.find_element(By.CSS_SELECTOR, "span.sc-d5f48f0e-1.heSJqR").text.strip()
-                        nota_attr = container.find_element(By.CSS_SELECTOR, "div.ratingStarsContainer").get_attribute("aria-label")
-                        nota = nota_attr.split(":")[1].strip() if nota_attr else None
-                        data = container.find_element(By.CSS_SELECTOR, "span.sc-d5f48f0e-2.brbMqG").text.replace("Avaliado em ", "").strip()
-                        comentario = container.find_element(By.CSS_SELECTOR, "span.sc-9e789c55-8.eUnvhx").text.strip()
-                        titulo_av = container.find_element(By.CSS_SELECTOR, "h5.sc-d5f48f0e-3.gByuuW").text.strip()
+                        autor = container.find_element(By.XPATH, './/button[1]/div/span').text.strip()
+                        nota_attr = container.find_element(By.XPATH, './/div[@data-testid="ratingStars"]').get_attribute("aria-label")
+                        nota = nota_attr.split(":")[1].strip() if nota_attr else None                   
+                        data = container.find_element(By.XPATH, './/span[contains(text(), "Avaliado em")]').text.replace("Avaliado em ", "").strip()
+                        titulo_av = container.find_element(By.XPATH, './/button[1]/h5').text.strip()
+                        comentario = container.find_element(By.XPATH, './/p/span').get_attribute("textContent").strip()
 
-                        chave = f"{autor}-{data}-{titulo_av}-{comentario[:30]}" # Chave um pouco mais curta
-                        if chave not in avaliacoes_unicas:
-                            avaliacoes_unicas.add(chave)
-                            dados_produto["avaliacoes"].append({
-                                "id": review_id,
-                                "pagina": pagina_atual,
-                                "autor": autor,
-                                "nota": nota,
-                                "data": data,
-                                "titulo": titulo_av,
-                                "comentario": comentario
-                            })
-                            review_id += 1
+                        dados_produto["avaliacoes"].append({
+                            "id": review_id,
+                            "pagina": pagina_atual,
+                            "autor": autor,
+                            "nota": nota,
+                            "data": data,
+                            "titulo": titulo_av,
+                            "comentario": comentario
+                        })
+                        review_id += 1
                     except Exception:
                         continue # Se falhar 1 review específico, pula ele
 
@@ -191,14 +180,19 @@ def scrape_produto(url: str):
                     
                     next_button = next_li.find_element(By.TAG_NAME, "a")
                     
-                    # Guarda estado antes de clicar
-                    first_text_before = review_containers[0].text.strip()
+                    primeiro_review_antigo = review_containers[0]
+                    texto_antigo = primeiro_review_antigo.text.strip()
                     
                     driver.execute_script("arguments[0].click();", next_button)
-                    
-                    # Espera a lista mudar
+                    # Passo A: Espera o elemento antigo sumir do DOM (Staleness).
+                    try:
+                        wait.until(EC.staleness_of(primeiro_review_antigo))
+                    except TimeoutException:
+                        pass
+                    # Passo B: Espera que o NOVO texto apareça E seja válido
+                    new_containers = '//*[@id="reviewsSection"]//div[./button/div/div[@data-testid="ratingStars"]]'
                     wait.until(lambda d: 
-                        d.find_elements(By.CSS_SELECTOR, "div.sc-9e789c55-0.grUenq")[0].text.strip() != first_text_before
+                        check_new_content_loaded(d, new_containers, texto_antigo, by_type=By.XPATH)
                     )
                     
                     pausa(2, 4)
@@ -217,10 +211,23 @@ def scrape_produto(url: str):
     dados_produto["produto"]["url"] = url
     dados_produto["produto"]["data_extracao"] = time.strftime("%Y-%m-%d %H:%M:%S")
 
-    pausa(2, 5) # Pausa entre produtos
+    pausa(2, 5)
 
     return dados_produto
 
+
+def check_new_content_loaded(driver, selector, old_text, by_type):
+    """Verifica se novo conteúdo foi carregado em um elemento da página web comparando seu texto atual com uma versão anterior"""
+    try:
+        elements = driver.find_elements(by_type, selector)
+        if not elements:
+            return False
+        
+        new_text = elements[0].text.strip()
+        
+        return (new_text != old_text) and (len(new_text) > 5)
+    except:
+        return False
 
 def load_sitemap_urls():
     """Carrega URLs de produto armazenadas no MongoDB, ignorando as já processadas"""
@@ -228,12 +235,15 @@ def load_sitemap_urls():
     urls_produto = []
 
     for doc in documentos_sitemaps:
-        urls = [item["url"] for item in doc["urls"] if "/produto/" in item["url"]]
+        urls = [
+            item["url"] for item in doc["urls"] 
+            if "/produto/" in item["url"] 
+            and "servico-de-montagem-de-computadores" not in item["url"]
+        ]
         urls_produto.extend(urls)
 
     if not urls_produto:
         return []
-
     # Buscar apenas URLs que ainda não estão na coleção de produtos
     urls_processadas = collection.distinct("produto.url")
     urls_faltantes = list(set(urls_produto) - set(urls_processadas))
@@ -250,12 +260,7 @@ def save_produto(dados: dict):
 
         filtro = {"_id": codigo_produto}
         novo_documento = {"$set": dados}
-        resultado = collection.update_one(filtro, novo_documento, upsert=True)
-
-        #if resultado.upserted_id:
-        #   print(f"NOVO: Produto inserido com o ID {resultado.upserted_id}")
-        #else:
-        #   print(f"ATUALIZADO: Produto {codigo_produto} atualizado.")
+        collection.update_one(filtro, novo_documento, upsert=True)
     except PyMongoError as e:
         raise Exception(f"[ERRO MONGO] Falha ao salvar produto {dados.get('produto', {}).get('titulo')}: {e}")
     except Exception as e:
