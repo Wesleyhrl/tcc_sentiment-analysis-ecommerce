@@ -157,7 +157,7 @@ def scrape_produto(url: str):
                         nota = nota_attr.split(":")[1].strip() if nota_attr else None                   
                         data = container.find_element(By.XPATH, './/span[contains(text(), "Avaliado em")]').text.replace("Avaliado em ", "").strip()
                         titulo_av = container.find_element(By.XPATH, './/button[1]/h5').text.strip()
-                        comentario = container.find_element(By.XPATH, './/p/span').get_attribute("textContent").strip()
+                        comentario = container.find_element(By.XPATH, './/p/span').text.strip()
 
                         dados_produto["avaliacoes"].append({
                             "id": review_id,
@@ -179,22 +179,13 @@ def scrape_produto(url: str):
                         break # Fim das páginas
                     
                     next_button = next_li.find_element(By.TAG_NAME, "a")
-                    
-                    primeiro_review_antigo = review_containers[0]
-                    texto_antigo = primeiro_review_antigo.text.strip()
-                    
+                    first_text_before = review_containers[0].text.strip()
                     driver.execute_script("arguments[0].click();", next_button)
-                    # Passo A: Espera o elemento antigo sumir do DOM (Staleness).
-                    try:
-                        wait.until(EC.staleness_of(primeiro_review_antigo))
-                    except TimeoutException:
-                        pass
-                    # Passo B: Espera que o NOVO texto apareça E seja válido
                     new_containers = '//*[@id="reviewsSection"]//div[./button/div/div[@data-testid="ratingStars"]]'
                     wait.until(lambda d: 
-                        check_new_content_loaded(d, new_containers, texto_antigo, by_type=By.XPATH)
+                        d.find_elements(By.XPATH, new_containers)[0].text.strip() != first_text_before
                     )
-                    
+
                     pausa(2, 4)
                     pagina_atual += 1
 
@@ -214,20 +205,6 @@ def scrape_produto(url: str):
     pausa(2, 5)
 
     return dados_produto
-
-
-def check_new_content_loaded(driver, selector, old_text, by_type):
-    """Verifica se novo conteúdo foi carregado em um elemento da página web comparando seu texto atual com uma versão anterior"""
-    try:
-        elements = driver.find_elements(by_type, selector)
-        if not elements:
-            return False
-        
-        new_text = elements[0].text.strip()
-        
-        return (new_text != old_text) and (len(new_text) > 5)
-    except:
-        return False
 
 def load_sitemap_urls():
     """Carrega URLs de produto armazenadas no MongoDB, ignorando as já processadas"""
