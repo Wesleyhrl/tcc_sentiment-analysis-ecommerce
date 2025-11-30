@@ -28,8 +28,8 @@ export default function InputSearch({ searchAction }: InputSearchProps) {
         />
 
         <InputGroupAddon align="inline-end">
-          <InputGroupButton className='bg-primary-blue text-text-secondary text-base py-3.5 cursor-pointer 
-          hover:bg-blue-700 transition-colors font-bold'
+          <InputGroupButton className=' bg-[#1f4f92] text-text-secondary text-base py-3.5 cursor-pointer 
+          hover:bg-[#122f5a] transition-colors font-bold'
             variant="secondary" type="submit" disabled={pending}>
             {pending ? (
               <Spinner className="mr-2" strokeWidth={3.5} />
