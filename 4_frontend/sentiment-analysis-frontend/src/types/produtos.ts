@@ -52,6 +52,11 @@ export interface Estatisticas {
   estatisticas_sentimentos: EstatisticasSentimentos;
 }
 
+export interface ProdutoDataInfo {
+  _id: string;
+  produto: ProdutoInfo
+}
+
 // Interface principal para a resposta da API
 export default interface ProdutoData {
   _id: string;
