@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import SearchInput from '../components/inputSearch/index';
 import CategoryMenu from '../components/categoryMenu/index';
 import {  Logs  } from 'lucide-react';
+import ProdutoExplorer from '@/components/produto/ProdutoExplorer';
 
 async function searchProducts(formData: FormData) {
   'use server';
@@ -24,13 +25,7 @@ export default async function Home() {
   return (
     <div className="min-h-[calc(100vh-64px)] flex flex-col items-center bg-background p-4">
       <SearchInput searchAction={searchProducts} />
-      <div className="w-full mb-2 mt-10 ">
-        <div className='flex justify-center items-center gap-1 mb-1'>
-         <Logs  strokeWidth={2.80} className='text-[#193f76]' />
-        <span className='text-2xl font-bold uppercase mb-0.5 text-[#193f76]'>Categorias</span>
-        </div>
-        <CategoryMenu />
-      </div>
+      <ProdutoExplorer />
     </div>
   );
 }
