@@ -38,7 +38,7 @@ class SentimentAnalyzer:
         if not texto or texto == ".":
             return {"label": "sem_texto", "score": 1.0}
 
-        resultado = self.pipe(texto)[0]
+        resultado = self.pipe(texto, truncation=True, max_length=512)[0]
         melhor = max(resultado, key=lambda x: x["score"])
 
         return {
@@ -67,7 +67,7 @@ class SentimentAnalyzer:
 
         # Processa todos os textos válidos de uma vez
         if textos:
-            resultados = self.pipe(textos)
+            resultados = self.pipe(textos, truncation=True, max_length=512)
 
             # Atribui os resultados diretamente às avaliações
             for idx, resultado in zip(indices_validos, resultados):
