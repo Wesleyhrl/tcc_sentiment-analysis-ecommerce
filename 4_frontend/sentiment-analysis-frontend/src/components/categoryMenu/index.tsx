@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ArrowLeftIcon, Menu } from 'lucide-react';
+import { ArrowLeftIcon, Settings2 } from 'lucide-react';
 import { fetchNavigation } from '@/app/actions/navigation';
 import { Button } from '@/components/ui/button';
 import { ButtonGroup } from '@/components/ui/button-group'; 
@@ -57,19 +57,19 @@ export default function CategoryMenu({ onCategorySelect }: CategoryMenuProps) {
 
   return (
     // Container externo para centralizar tudo na tela
-    <div className="w-full flex justify-center px-4">
+    <div className="w-full flex justify-start px-1">
       
       {/*Container inteligente: "w-fit" abraça o conteúdo, "max-w-full" impede que estoure a tela */}
       <div className="flex flex-col items-start w-fit max-w-full">
           
           {/*TÍTULO: Fica fora do ScrollArea, então não rola, mas está preso ao container dos botões */}
-          <div className='flex items-center gap-1  pl-1'>
-              <Menu strokeWidth={2.80} className="w-4 h-4 text-blue-400" />
-              <span className='text-lg font-bold mb-0.5 text-[#193f76]'>Categorias</span>
+          <div className='flex items-center  gap-1'>
+              <Settings2 className="w-6 h-6 text-slate-700" />
+              <span className='text-xl sm:text-2xl font-bold mb-1 text-slate-700'>Categorias</span>
           </div>
 
           {/*SCROLL AREA: Apenas os botões rolam aqui dentro se passarem do limite */}
-          <ScrollArea type="auto" className="w-full whitespace-nowrap px-3 pb-4">
+          <ScrollArea type="auto" className="w-full whitespace-nowrap px-1 pb-4">
             <ButtonGroup>
               
               {history.length > 0 && (

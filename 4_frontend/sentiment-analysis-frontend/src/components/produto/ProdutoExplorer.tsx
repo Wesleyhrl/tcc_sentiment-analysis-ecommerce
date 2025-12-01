@@ -63,7 +63,7 @@ export default function ProdutoExplorer() {
                 ) : (
                     <>
                         <div className="flex flex-col sm:flex-row justify-between items-center mb-6 px-1 border-b pb-2 border-gray-200">
-                            <h2 className="text-xl sm:text-2xl font-bold text-[#193f76] capitalize">
+                            <h2 className="text-xl sm:text-2xl font-bold text-slate-700 capitalize">
                                 {getCategoryTitle(filter)}
                             </h2>
                             <div className="mt-1 sm:mt-0 text-gray-500">
