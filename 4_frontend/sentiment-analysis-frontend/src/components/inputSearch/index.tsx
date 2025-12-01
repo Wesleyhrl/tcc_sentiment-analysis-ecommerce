@@ -22,14 +22,14 @@ export default function InputSearch({ searchAction }: InputSearchProps) {
       <InputGroup className='py-5 bg-white'>
         <InputGroupInput
           name="search"
-          placeholder="Digite 'Código', 'Nome' ou 'Link' do produto"
+          placeholder="Código, Nome ou Link do produto"
           required
-          className="!text-base borde"
+          className="!text-xs sm:!text-base borde"
         />
 
         <InputGroupAddon align="inline-end">
-          <InputGroupButton className=' bg-[#1f4f92] text-text-secondary text-base py-3.5 cursor-pointer 
-          hover:bg-[#122f5a] transition-colors font-bold'
+          <InputGroupButton className=' bg-primary-blue text-text-secondary text-base py-3.5 cursor-pointer 
+          hover:bg-secondary-blue-dark transition-colors font-bold'
             variant="secondary" type="submit" disabled={pending}>
             {pending ? (
               <Spinner className="mr-2" strokeWidth={3.5} />
