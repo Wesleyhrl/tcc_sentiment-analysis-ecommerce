@@ -6,6 +6,8 @@
 @theme inline{
   /* CORES PERSONALIZADAS INÍCIO */
   --color-primary-blue: #3B83EA;
+  --color-secondary-blue-light: #6FA2F0;
+  --color-secondary-blue-dark: #2A5AAB;
   --color-trust-green: #059669;
   --color-positive: #16a34a;
   --color-neutral: #64748b;
