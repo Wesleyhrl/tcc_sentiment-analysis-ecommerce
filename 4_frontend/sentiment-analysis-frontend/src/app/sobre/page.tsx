@@ -28,8 +28,8 @@ export default function AboutPage() {
                         Sobre o Review Sentimentum
                     </h1>
                     <p className="text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
-                        Uma ferramenta inteligente que utiliza Processamento de Linguagem Natural (NLP)
-                        para ajudar consumidores a tomarem decisões melhores na compra de hardware.
+                        Uma ferramenta inteligente que utiliza Processamento de Linguagem Natural (NLP) para auxiliar consumidores, 
+                        transformando milhares de comentários em melhores decisões de compra de produtos de informática.
                     </p>
                 </div>
                 <Separator />
@@ -48,11 +48,12 @@ export default function AboutPage() {
                             <p>
                                 Sites de e-commerce como a Kabum possuem milhares de avaliações.
                                 Ler todas elas para entender se uma placa de vídeo esquenta muito ou
-                                se um monitor tem dead pixels é uma tarefa exaustiva.
+                                se um monitor tem <em>dead pixels</em> é uma tarefa exaustiva.
                             </p>
                             <p>
-                                Muitas vezes, a nota geral (estrelas) não reflete as nuances e os
-                                detalhes técnicos escritos pelos usuários experientes.
+                                Muitas vezes, a nota geral (estrelas) esconde detalhes técnicos cruciais.
+                                O consumidor precisa saber se o produto "dá gargalo" ou se tem "coil whine",
+                                e não apenas se ele é "bom".
                             </p>
                         </div>
                     </div>
@@ -135,7 +136,7 @@ export default function AboutPage() {
                             </CardHeader>
                             <CardContent>
                                 <p className="text-slate-600">
-                                    Backend robusto em <strong>FastAPI</strong> integrado ao <strong>MongoDB</strong>,
+                                    Arquitetura moderna (FARM Stack): Backend robusto em <strong>FastAPI</strong> integrado ao <strong>MongoDB</strong>,
                                     servindo um frontend moderno e reativo em <strong>Next.js</strong>.
                                 </p>
                             </CardContent>
