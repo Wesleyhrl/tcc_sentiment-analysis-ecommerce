@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Literal
 from fastapi import APIRouter, Query, Request
 from models.produto_model import ProdutoModel, ProdutoBuscaModel
 from models.pagination_model import PaginationResponse
@@ -46,6 +46,7 @@ async def obter_produto(id: str, request: Request):
 async def buscar_produtos(
     request: Request,
     titulo: str = Query(..., description="Buscar por título"),
+    ordem: Literal["relevancia", "coletas"] = Query("relevancia", description="Ordenação: 'relevancia' (padrão) ou 'coletas' (mais avaliados primeiro)"),
     page: int = Query(1, ge=1, description="Número da página (começa em 1)"),
     page_size: int = Query(50, ge=1, le=100, description="Itens por página")
 ):
@@ -56,12 +57,13 @@ async def buscar_produtos(
     - **page_size**: Número de itens por página (padrão: 50, máximo: 100)
     """
     service = ProdutoService(request.app.database)
-    return await service.buscar_produtos(titulo=titulo, page=page, page_size=page_size)
+    return await service.buscar_produtos(titulo=titulo, page=page, page_size=page_size, ordem=ordem)
 
 @router.get("/listar/localizacao/", response_model=PaginationResponse[ProdutoBuscaModel])
 async def listar_produtos_por_localizacao(
     request: Request,
     filtro: str = Query(..., min_length=1, description="Caminho da categoria (ex: 'hardware' ou 'hardware/ssd-2-5')"),
+    ordem: Literal["relevancia", "coletas"] = Query("relevancia", description="Ordenação dos itens"),
     page: int = Query(1, ge=1, description="Número da página"),
     page_size: int = Query(50, ge=1, le=100, description="Itens por página")
 ):
@@ -71,4 +73,4 @@ async def listar_produtos_por_localizacao(
     - **filtro**: Parte da URL que representa a categoria (obtido na rota de navegação).
     """
     service = ProdutoService(request.app.database)
-    return await service.buscar_produtos_por_localizacao(localizacao=filtro, page=page, page_size=page_size)
+    return await service.buscar_produtos_por_localizacao(localizacao=filtro, page=page, page_size=page_size, ordem=ordem)

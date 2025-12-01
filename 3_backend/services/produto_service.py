@@ -65,7 +65,7 @@ class ProdutoService:
         raise HTTPException(
             status_code=404, detail=f"Produto {id} não encontrado")
 
-    async def buscar_produtos(self, titulo: str, page: int, page_size: int):
+    async def buscar_produtos(self, titulo: str, page: int, page_size: int, ordem: str = "relevancia"):
         # Construir query base
         query = {}
         palavras = titulo.split()
@@ -99,10 +99,21 @@ class ProdutoService:
             "estatisticas": 0,
         }
 
+        # Lógica de Ordenação
+        sort_criteria = []
+        
+        if ordem == "coletas":
+            # Ordena por total de avaliações decrescente (-1)
+            sort_criteria = [("produto.total_avaliacoes_coletadas", -1)]
+        else:
+            # Relevância do texto (score)
+            projection["score"] = {"$meta": "textScore"}
+            sort_criteria = [("score", {"$meta": "textScore"})]
+
         skip = (page - 1) * page_size
 
         # Executar a busca
-        cursor = self.collection.find(query, projection).skip(skip).limit(page_size)
+        cursor = self.collection.find(query, projection).sort(sort_criteria).skip(skip).limit(page_size)
         produtos = await cursor.to_list(length=page_size)
 
         # cálculos da paginação
@@ -116,7 +127,7 @@ class ProdutoService:
             "pages": total_pages
         }
 
-    async def buscar_produtos_por_localizacao(self, localizacao: str, page: int, page_size: int):
+    async def buscar_produtos_por_localizacao(self, localizacao: str, page: int, page_size: int, ordem: str = "relevancia"):
             """
             Busca produtos que contenham o trecho da localização na URL.
             Ex: localizacao="hardware" trará itens com URL ".../hardware/..."
@@ -148,8 +159,16 @@ class ProdutoService:
 
             skip = (page - 1) * page_size
 
+            # Lógica de Ordenação
+            sort_criteria = []
+            if ordem == "coletas":
+                 # Ordena por total de avaliações decrescente (-1)
+                 sort_criteria = [("produto.total_avaliacoes_coletadas", -1)]
+            else:
+                sort_criteria = [("produto.titulo", 1)]
+
             # Executa a query ordenando por classificação ou titulo (opcional, aqui pus padrão)
-            cursor = self.collection.find(query, projection).skip(skip).limit(page_size)
+            cursor = self.collection.find(query, projection).sort(sort_criteria).skip(skip).limit(page_size)
             produtos = await cursor.to_list(length=page_size)
 
             total_pages = math.ceil(total_items / page_size)
