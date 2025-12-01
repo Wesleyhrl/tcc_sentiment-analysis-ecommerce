@@ -1,7 +1,6 @@
 'use server';
 import { ProdutoDataInfo } from "@/types/produtos";
 
-
 export interface ProdutoBuscaResponse {
   items: ProdutoDataInfo[];
   total: number;
@@ -12,12 +11,18 @@ export interface ProdutoBuscaResponse {
 
 const API_BASE_URL = process.env.API_BASE_URL || 'http://127.0.0.1:8000';
 
-export async function fetchProdutosBusca(titulo: string, page: number = 1, pageSize: number = 50): Promise<ProdutoBuscaResponse | null> {
+export async function fetchProdutosBusca(
+    titulo: string, 
+    page: number = 1, 
+    pageSize: number = 50,
+    ordem: string = 'relevancia'
+): Promise<ProdutoBuscaResponse | null> {
   try {
     const params = new URLSearchParams({
       titulo: titulo,
       page: page.toString(),
       page_size: pageSize.toString(),
+      ordem: ordem, // Adicionado aos parâmetros da URL
     });
 
     const response = await fetch(`${API_BASE_URL}/produtos/buscar/?${params.toString()}`, {

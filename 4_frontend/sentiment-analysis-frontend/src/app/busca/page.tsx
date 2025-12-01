@@ -7,6 +7,14 @@ import PaginationControl from '@/components/pagination';
 import { Spinner } from '@/components/ui/spinner';
 import { ProdutoBuscaResponse, fetchProdutosBusca } from '@/app/actions/produtosBusca';
 
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+
 function SearchContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -17,9 +25,11 @@ function SearchContent() {
     const [loading, setLoading] = useState(false);
     
     const [currentPage, setCurrentPage] = useState(1);
+    const [sortOrder, setSortOrder] = useState("relevancia");
 
     useEffect(() => {
         setCurrentPage(1);
+        setSortOrder("relevancia"); 
     }, [query]);
 
     // Função principal de busca
@@ -31,7 +41,7 @@ function SearchContent() {
 
         setLoading(true);
         try {
-            const result = await fetchProdutosBusca(query, currentPage);
+            const result = await fetchProdutosBusca(query, currentPage, 50, sortOrder);
             setData(result);
         } catch (error) {
             console.error("Falha na busca", error);
@@ -40,15 +50,20 @@ function SearchContent() {
         }
     };
 
-    // Dispara a busca quando a query (URL) ou a paginação mudar
     useEffect(() => {
         loadSearchResults();
-    }, [query, currentPage]);
+    }, [query, currentPage, sortOrder]);
 
     // Handler para paginação
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
         window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    // Handler para ordenação
+    const handleSortChange = (value: string) => {
+        setSortOrder(value);
+        setCurrentPage(1);
     };
 
     return (
@@ -78,14 +93,32 @@ function SearchContent() {
                     </div>
                 ) : (
                     <>
-                        <div className="flex flex-col sm:flex-row justify-between items-center mb-6 px-1 border-b pb-2 border-gray-200">
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 px-1 border-b pb-4 border-gray-200 gap-4">
                             <h2 className="text-xl font-bold text-gray-700">
                                 Produtos Encontrados
                             </h2>
-                            <div className="mt-1 sm:mt-0 text-gray-500">
-                                <span className="text-sm font-bold text-[#193f76]">
-                                    {data.total}
-                                </span> resultados
+                            
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full md:w-auto">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-sm text-gray-600 font-medium whitespace-nowrap">
+                                        Ordenar por:
+                                    </span>
+                                    <Select value={sortOrder} onValueChange={handleSortChange}>
+                                        <SelectTrigger className="w-[200px] bg-white">
+                                            <SelectValue placeholder="Selecione a ordem" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="relevancia">Relevância</SelectItem>
+                                            <SelectItem value="coletas">Mais Avaliados</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                <div className="mt-1 sm:mt-0 text-gray-500 text-sm whitespace-nowrap">
+                                    <span className="font-bold text-[#193f76]">
+                                        {data.total}
+                                    </span> resultados
+                                </div>
                             </div>
                         </div>
 

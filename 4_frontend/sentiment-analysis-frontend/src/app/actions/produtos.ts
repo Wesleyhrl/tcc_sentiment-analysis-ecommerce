@@ -13,12 +13,12 @@ export interface ProdutoListaResponse {
 export async function fetchProdutosLista(
   filtro: string = '', 
   page: number = 1, 
-  pageSize: number = 12
+  pageSize: number = 12,
+  ordem: string = 'relevancia'
 ): Promise<ProdutoListaResponse | null> {
   try {
     const API_BASE_URL = process.env.API_BASE_URL;
-    // Monta a URL com os parâmetros de query string
-    const apiUrl = `${API_BASE_URL}/produtos/listar/localizacao/?filtro=${filtro}&page=${page}&page_size=${pageSize}`;
+    const apiUrl = `${API_BASE_URL}/produtos/listar/localizacao/?filtro=${filtro}&page=${page}&page_size=${pageSize}&ordem=${ordem}`;
     
     const response = await fetch(apiUrl, {
         cache: "force-cache",

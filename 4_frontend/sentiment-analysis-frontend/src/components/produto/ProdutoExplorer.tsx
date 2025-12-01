@@ -6,10 +6,18 @@ import ProdutoCard from './ProdutoCard';
 import PaginationControl from '../pagination';
 import CategoryMenu from '../categoryMenu/index';
 import { Spinner } from '@/components/ui/spinner';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function ProdutoExplorer() {
     const [filter, setFilter] = useState("");
     const [page, setPage] = useState(1);
+    const [sortOrder, setSortOrder] = useState("relevancia");
     const [data, setData] = useState<ProdutoListaResponse | null>(null);
     const [loading, setLoading] = useState(false);
 
@@ -18,7 +26,7 @@ export default function ProdutoExplorer() {
         if (filter == "") {
             setData(null);
         } else {
-            const result = await fetchProdutosLista(filter, page);
+            const result = await fetchProdutosLista(filter, page, 12, sortOrder);
             setData(result);
         }
         setLoading(false);
@@ -26,10 +34,15 @@ export default function ProdutoExplorer() {
 
     useEffect(() => {
         loadProducts()  
-    }, [filter, page]);
+    }, [filter, page, sortOrder]);
 
     const handleCategoryChange = (newFilter: string) => {
         setFilter(newFilter);
+        setPage(1);
+    };
+
+    const handleSortChange = (value: string) => {
+        setSortOrder(value);
         setPage(1);
     };
 
@@ -62,12 +75,32 @@ export default function ProdutoExplorer() {
                     </div>
                 ) : (
                     <>
-                        <div className="flex flex-col sm:flex-row justify-between items-center mb-6 px-1 border-b pb-2 border-gray-200">
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 px-1 border-b pb-4 border-gray-200 gap-4">
+                            
                             <h2 className="text-xl sm:text-2xl font-bold text-slate-700 capitalize">
                                 {getCategoryTitle(filter)}
                             </h2>
-                            <div className="mt-1 sm:mt-0 text-gray-500">
-                                <span className="text-sm font-bold ">{(data as any).total ?? data.items.length}</span> <span>produtos</span>
+
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full md:w-auto">
+                                
+                                <div className="flex items-center gap-2">
+                                    <span className="text-sm text-gray-600 font-medium whitespace-nowrap">
+                                        Ordenar por:
+                                    </span>
+                                    <Select value={sortOrder} onValueChange={handleSortChange}>
+                                        <SelectTrigger className="w-[200px] bg-white">
+                                            <SelectValue placeholder="Selecione a ordem" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="relevancia">Relevância</SelectItem>
+                                            <SelectItem value="coletas">Mais Avaliados</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                <div className="text-gray-500 text-sm whitespace-nowrap">
+                                    <span className="font-bold">{(data as any).total ?? data.items.length}</span> <span>produtos</span>
+                                </div>
                             </div>
                         </div>
 
