@@ -6,7 +6,7 @@ Este projeto coleta e analisa avaliações de produtos em e-commerce, classifica
 
 Antes de começar, você precisa ter instalado:
 
-- Python 3.9+
+- Python 3.13+
 - **Poetry** (Gerenciador de dependências)
 - Node.js 22+
 - MongoDB
@@ -14,10 +14,12 @@ Antes de começar, você precisa ter instalado:
 
 ## Estrutura do repositório
 
-- 1_coleta -> Web Scraping (Kabum)
-- 2_analise -> Processamento e Análise de Sentimentos
-- 3_backend -> API em FastAPI
-- 4_frontend -> Interface Web (Next.js / React)
+Cada módulo possui sua própria documentação detalhada. Clique nos links abaixo para ver os detalhes de implementação de cada etapa:
+
+- [**1_coleta**](./1_coleta/README.md) -> Web Scraping (Kabum) e Persistência de dados brutos.
+- [**2_analise**](./2_analise/README.md) -> Processamento, Fine-tuning e Classificação de Sentimentos.
+- [**3_backend**](./3_backend/README.md) -> API REST em FastAPI e acesso ao MongoDB.
+- [**4_frontend**](./4_frontend/sentiment-analysis-frontend/README.md) -> Interface Web (Next.js / React) para visualização dos dados.
 
 ## Tecnologias Utilizadas
 
@@ -59,25 +61,30 @@ npm run setup
 ```
 ## Como Executar
 
-Utilize os scripts configurados no package.json da raiz para facilitar a execução:
+Utilize os scripts configurados no `package.json` da raiz para facilitar a execução:
 
-1. Garanta que o MongoDB esteja rodando.
+1. Garanta que o MongoDB esteja rodando e esteja com ambiente virtual ativado.
 
-2. Executar Coleta de Dados (Scraping):
+2. **Executar Coleta de Dados (Scraping):**
 
    * `npm run scrape`
 
-3. Executar Treinamento do Modelo (Fine-tuning - Quando Necessário):
+3. **Executar Treinamento do Modelo (Fine-tuning - Quando Necessário):**
 
    * `npm run fine-tuning`
 
-4. Executar análise de sentimentos (Processar dados coletados):
+4. **Executar Análise de Sentimentos (Processar dados coletados):**
 
    * `npm run analyze`
-5. Rodar a Aplicação (Backend + Frontend):
+5. **Rodar a Aplicação (Backend + Frontend):**
 
    * `npm run app`
-6. Acessos (Após iniciar a aplicação):
+6. **Rodar a Aplicação Separadamente (Opcional):**
+
+   Caso prefira rodar em terminais diferentes:
+   * Backend: `npm run start-backend`
+   * Frontend: `npm run start-frontend`
+7. Acessos (Após iniciar a aplicação):
 
    * Frontend: `http://localhost:3000`
    * API Docs (Swagger): `http://localhost:8000/docs`
