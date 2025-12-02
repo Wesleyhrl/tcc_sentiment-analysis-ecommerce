@@ -1,19 +1,20 @@
-import ProdutoData from '@/types/produtos'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Card, CardContent } from '@/components/ui/card'
 import ProdutoInfo from '@/components/produto/ProdutoInfo'
 import ProdutoEstatisticas from '@/components/produto/ProdutoEstatisticas'
 import ProdutoAvaliacoes from '@/components/produto/ProdutoAvaliacoes'
+import { fetchProduto } from '@/app/actions/produto'
 
 export interface ProdutoRouteParams {
   id: string
 }
 
 export default async function Produto({ params }: { params: Promise<ProdutoRouteParams> }) {
-  const API_BASE_URL = process.env.API_BASE_URL || 'http://127.0.0.1:8000';
   const { id: productId } = await params
-  const response = await fetch(`${API_BASE_URL}/produtos/${productId}`, { cache: 'no-store' })
-  const productData: ProdutoData = await response.json()
+  const productData = await fetchProduto(productId)
+  if (!productData) {
+    return <div>Produto não encontrado</div>
+  }
 
   return (
     <div className="container mx-auto py-8 space-y-6">

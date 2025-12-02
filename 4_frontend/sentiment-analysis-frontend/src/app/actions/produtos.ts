@@ -18,9 +18,19 @@ export async function fetchProdutosLista(
 ): Promise<ProdutoListaResponse | null> {
   try {
     const API_BASE_URL = process.env.API_BASE_URL || 'http://127.0.0.1:8000';
+    const API_KEY = process.env.API_KEY;
+
+    if (!API_KEY) {
+      throw new Error("ERRO: API_KEY não definida no .env");
+    }
+
     const apiUrl = `${API_BASE_URL}/produtos/listar/localizacao/?filtro=${filtro}&page=${page}&page_size=${pageSize}&ordem=${ordem}`;
     
     const response = await fetch(apiUrl, {
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Key': API_KEY,
+        },
         cache: "force-cache",
       next: { revalidate: 60 }, // Cache de 60 segundos
     });

@@ -22,13 +22,20 @@ export async function fetchProdutosBusca(
       titulo: titulo,
       page: page.toString(),
       page_size: pageSize.toString(),
-      ordem: ordem, // Adicionado aos parâmetros da URL
+      ordem: ordem,
     });
+
+    const API_KEY = process.env.API_KEY;
+
+    if (!API_KEY) {
+      throw new Error("ERRO: API_KEY não definida no .env");
+    }
 
     const response = await fetch(`${API_BASE_URL}/produtos/buscar/?${params.toString()}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        'X-API-Key': API_KEY,
       },
       cache: 'no-store',
     });
