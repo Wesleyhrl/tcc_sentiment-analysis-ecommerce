@@ -1,36 +1,79 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Frontend - Review Sentimentum
 
-## Getting Started
+Este é o frontend do projeto de Análise de Sentimentos para E-commerce. Desenvolvido com **Next.js**, **React**, **Shadcn** e **Tailwind CSS**, ele oferece uma interface de usuário moderna e responsiva para interagir com a API de produtos, permitindo que os usuários explorem, busquem e analisem as avaliações de produtos de informática de forma intuitiva.
 
-First, run the development server:
+A aplicação consome os dados da API REST (Backend) para exibir informações detalhadas dos produtos, estatísticas de sentimento e os comentários individuais classificados por um modelo de IA.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Funcionalidades
+
+- **Página Inicial Dinâmica**: Permite a busca direta por código, nome ou link do produto, além da exploração de produtos por categorias.
+- **Busca Inteligente**: Redireciona automaticamente para a página de detalhes se um código ou link de produto é inserido, ou para uma página de resultados de busca para termos textuais.
+- **Visualização de Produtos**:
+    - **Página de Detalhes**: Exibe informações completas de um produto, incluindo dados técnicos, link para a loja, estatísticas de sentimento (gráficos de pizza e barras) e uma lista detalhada de todas as avaliações coletadas.
+    - **Cards de Produto**: Componentes reutilizáveis que exibem um resumo do produto nas páginas de listagem.
+- **Exploração por Categorias**: Um menu de navegação hierárquico e interativo que permite ao usuário explorar produtos por departamento, categoria e subcategoria.
+- **Paginação**: Controle de paginação para navegar facilmente por grandes volumes de resultados de busca e listagens de categoria.
+- **Design Responsivo**: Interface adaptada para uma ótima experiência em desktops, tablets e dispositivos móveis.
+- **Página "Sobre"**: Uma página dedicada que explica o propósito, o desafio e a arquitetura tecnológica do projeto.
+
+## Estrutura de Arquivos
+
+A estrutura do projeto segue as convenções do App Router do Next.js.
+
+```
+sentiment-analysis-frontend/
+│
+├── public/                 # Arquivos estáticos (imagens, ícones).
+│
+├── src/
+│   ├── app/
+│   │   ├── (rotas)/        # Pastas que definem as rotas da aplicação (ex: /produto/[id], /busca).
+│   │   ├── actions/        # Server Actions para buscar dados da API.
+│   │   ├── globals.css     # Estilos globais.
+│   │   └── layout.tsx      # Layout principal da aplicação.
+│   │
+│   ├── components/
+│   │   ├── ui/             # Componentes de UI base (shadcn/ui).
+│   │   ├── header/         # Componente de cabeçalho.
+│   │   ├── produto/        # Componentes específicos para a exibição de produtos.
+│   │   └── ...             # Outros componentes reutilizáveis.
+│   │
+│   ├── lib/
+│   │   └── utils.ts        # Funções utilitárias.
+│   │
+│   └── types/
+│       └── produtos.ts     # Tipagens TypeScript para os dados de produtos.
+│
+├── package.json            # Dependências e scripts do projeto.
+└── next.config.ts          # Configurações do Next.js.
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Bibliotecas Principais
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Next.js**: Framework React para renderização no servidor e geração de sites estáticos.
+- **React**: Biblioteca para construção de interfaces de usuário.
+- **Tailwind CSS**: Framework de CSS utility-first para estilização.
+- **shadcn/ui**: Coleção de componentes de UI reutilizáveis e acessíveis.
+- **Lucide React**: Biblioteca de ícones.
+- **Recharts**: Biblioteca para a criação de gráficos (usada nas estatísticas de sentimento).
+- **ESLint**: Para linting e manutenção da qualidade do código.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Pré-requisitos
 
-## Learn More
+- Node.js (versão 20 ou superior)
+- npm ou yarn
+- O **Backend (API)** do projeto deve estar em execução e acessível pela rede.
 
-To learn more about Next.js, take a look at the following resources:
+## Instalação
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1.  Navegue até o diretório **raiz** do projeto.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+2.  Verifique o arquivo `README.md` na pasta raiz para confirmar as dependências e requisitos de instalação.
 
-## Deploy on Vercel
+## Instruções de Uso
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1.  Siga as instruções no arquivo `README.md` no diretório **raiz** para os comandos de execução.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+2.  **Abra seu navegador** e acesse a aplicação:
+    [http://localhost:3000](http://localhost:3000)
+
