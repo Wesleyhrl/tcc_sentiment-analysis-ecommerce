@@ -5,7 +5,7 @@ from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from pymongo import MongoClient
+from database import get_database
 from selenium.common.exceptions import  WebDriverException
 from selenium.common.exceptions import TimeoutException
 from pymongo.errors import PyMongoError
@@ -31,8 +31,7 @@ def close_driver():
     time.sleep(1)
 
 # CONEXÃO MONGODB
-client = MongoClient("mongodb://localhost:27017/")
-db = client["kabum_scraping"]
+db = get_database()
 collection = db["produtos"]
 sitemaps_collection = db["sitemaps"]
 

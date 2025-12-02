@@ -1,5 +1,5 @@
 import datetime
-from pymongo import MongoClient
+from database import get_database
 
 # Variáveis globais para armazenar as estatísticas
 start_time = None
@@ -9,8 +9,7 @@ total_erros = 0
 nome_arquivo = ""
 
 # Configuração do MongoDB
-client = MongoClient("mongodb://localhost:27017/")
-db = client["kabum_scraping"]
+db = get_database()
 collection = db["estatisticas"]
 
 def iniciar_estatisticas():

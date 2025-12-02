@@ -1,12 +1,11 @@
 import time
 import requests
 from lxml import etree
-from pymongo import MongoClient
+from database import get_database
 
 
 # CONFIG MONGODB 
-client = MongoClient("mongodb://localhost:27017/")
-db = client["kabum_scraping"]
+db = get_database()
 collection = db["sitemaps"]
 
 # HEADERS
