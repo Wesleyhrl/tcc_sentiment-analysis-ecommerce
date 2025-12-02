@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams} from 'next/navigation';
 import ProdutoCard from '@/components/produto/ProdutoCard';
 import PaginationControl from '@/components/pagination';
 import { Spinner } from '@/components/ui/spinner';
@@ -17,7 +17,6 @@ import {
 
 function SearchContent() {
     const searchParams = useSearchParams();
-    const router = useRouter();
     
     const query = searchParams.get('q') || '';
     
