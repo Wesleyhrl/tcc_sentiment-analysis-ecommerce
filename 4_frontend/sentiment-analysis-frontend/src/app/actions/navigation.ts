@@ -7,7 +7,7 @@ interface CategoryItem {
 
 export async function fetchNavigation(filtro: string = ''): Promise<CategoryItem[]> {
   try {
-    const API_BASE_URL = process.env.API_BASE_URL
+    const API_BASE_URL = process.env.API_BASE_URL || 'http://127.0.0.1:8000';
     const apiUrl = `${API_BASE_URL}/produtos/navegacao/?filtro=${filtro}`;
     
     const response = await fetch(apiUrl);

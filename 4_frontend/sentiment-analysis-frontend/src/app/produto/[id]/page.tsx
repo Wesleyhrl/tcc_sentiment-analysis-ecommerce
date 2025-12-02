@@ -10,7 +10,7 @@ export interface ProdutoRouteParams {
 }
 
 export default async function Produto({ params }: { params: Promise<ProdutoRouteParams> }) {
-  const API_BASE_URL = process.env.API_BASE_URL
+  const API_BASE_URL = process.env.API_BASE_URL || 'http://127.0.0.1:8000';
   const { id: productId } = await params
   const response = await fetch(`${API_BASE_URL}/produtos/${productId}`, { cache: 'no-store' })
   const productData: ProdutoData = await response.json()
