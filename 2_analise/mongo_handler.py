@@ -1,13 +1,17 @@
+import os
+from dotenv import load_dotenv
 from pymongo import MongoClient
 from typing import List, Dict, Any
 
+load_dotenv()
+
 # Banco de onde vêm os dados originais
-CONNECTION_STRING = "mongodb://localhost:27017/"
-DB_SCRAPING = "kabum_scraping"
+CONNECTION_STRING = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
+DB_SCRAPING = os.getenv("DB_SOURCE_NAME", "kabum_scraping")
 COLLECTION_SCRAPING = "produtos"
 
 # Banco onde será salvo o resultado da análise
-DB_ANALYSIS = "produtos_analises"
+DB_ANALYSIS = os.getenv("DB_TARGET_NAME", "produtos_analises")
 COLLECTION_ANALYSIS = "produtos"
 
 

@@ -2,10 +2,16 @@ from pymongo import MongoClient
 import pandas as pd
 import random
 import os
+from dotenv import load_dotenv
 
-# Conexão com o MongoDB (ajuste a URI se necessário)
-client = MongoClient("mongodb://localhost:27017/")
-db = client["kabum_scraping"]
+load_dotenv()
+
+
+# Conexão com o MongoDB
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
+DB_NAME = os.getenv("MONGO_DB_NAME", "kabum_scraping")
+client = MongoClient(MONGO_URI)
+db = client[DB_NAME]
 collection = db["produtos"]
 
 # Buscar todos os documentos da coleção
