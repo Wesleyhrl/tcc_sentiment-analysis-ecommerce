@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/sheet";
 
 export default function Header() {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL_DOCS || 'http://127.0.0.1:8000/docs';
+    const apiUrl = process.env.API_URL_DOCS || 'http://127.0.0.1:8000/docs';
 
     return (
         <header className="sticky top-0 z-50 bg-primary-blue shadow-lg">
