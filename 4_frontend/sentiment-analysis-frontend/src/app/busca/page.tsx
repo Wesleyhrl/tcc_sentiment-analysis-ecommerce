@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, useCallback } from 'react';
 import { useSearchParams} from 'next/navigation';
 import ProdutoCard from '@/components/produto/ProdutoCard';
 import PaginationControl from '@/components/pagination';
@@ -32,7 +32,7 @@ function SearchContent() {
     }, [query]);
 
     // Função principal de busca
-    const loadSearchResults = async () => {
+    const loadSearchResults = useCallback(async () => {
         if (!query.trim()) {
             setData(null);
             return;
@@ -40,6 +40,7 @@ function SearchContent() {
 
         setLoading(true);
         try {
+            // Note que currentPage e sortOrder são usados aqui dentro
             const result = await fetchProdutosBusca(query, currentPage, 50, sortOrder);
             setData(result);
         } catch (error) {
@@ -47,11 +48,11 @@ function SearchContent() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [query, currentPage, sortOrder]);
 
     useEffect(() => {
         loadSearchResults();
-    }, [query, currentPage, sortOrder]);
+    }, [loadSearchResults]);
 
     // Handler para paginação
     const handlePageChange = (page: number) => {
@@ -69,7 +70,7 @@ function SearchContent() {
         <div className="min-h-[calc(100vh-64px)] flex flex-col items-center bg-background p-4 w-full">
             <div className="mb-8 w-full flex justify-center">
                  <h1 className="text-2xl font-bold text-[#193f76]">
-                    Resultados para: <span className="text-blue-500 italic">"{query}"</span>
+                    Resultados para: <span className="text-blue-500 italic">&quot;{query}&quot;</span>
                  </h1>
             </div>
 
@@ -84,7 +85,7 @@ function SearchContent() {
                 ) : !data || data.items.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-20 text-center">
                         <p className="text-gray-500 text-lg mb-2">
-                            Nenhum produto encontrado para <strong>"{query}"</strong>.
+                            Nenhum produto encontrado para <strong>&quot;{query}&quot;</strong>.
                         </p>
                         <p className="text-sm text-gray-400">
                             Tente verificar a ortografia ou usar termos mais genéricos.
