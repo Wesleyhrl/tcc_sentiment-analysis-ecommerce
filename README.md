@@ -24,7 +24,7 @@ Cada módulo possui sua própria documentação detalhada. Clique nos links abai
 - [**4_frontend**](./4_frontend/sentiment-analysis-frontend/README.md) -> Interface Web (Next.js / React) para visualização dos dados.
 
 
-🧠 [**Clique aqui para ver fine-tuning do Modelo (Notebook)**](./2_analise/fine_tuning.ipynb)
+🧠 [**Clique aqui para ver fine-tuning do Modelo (Jupyter Notebook)**](./2_analise/fine-tuning/fine_tuning.ipynb)
 
 ## Tecnologias Utilizadas
 
