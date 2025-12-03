@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, Suspense, useCallback } from 'react';
-import { useSearchParams} from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import ProdutoCard from '@/components/produto/ProdutoCard';
 import PaginationControl from '@/components/pagination';
 import { Spinner } from '@/components/ui/spinner';
@@ -116,25 +116,27 @@ function SearchContent() {
 
                                 <div className="mt-1 sm:mt-0 text-gray-500 text-sm whitespace-nowrap">
                                     <span className="font-bold text-[#193f76]">
-                                        {data.total}
+                                        {data?.total}
                                     </span> resultados
                                 </div>
                             </div>
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                            {data.items.map((item) => (
+                            {data?.items?.map((item) => (
                                 <ProdutoCard key={item._id} data={item} />
                             ))}
                         </div>
 
                         <div className="mt-10 mb-10">
-                            <PaginationControl
-                                currentPage={data.page}
-                                totalPages={data.pages}
-                                onPageChange={handlePageChange}
-                                isLoading={loading}
-                            />
+                            {data && (
+                                <PaginationControl
+                                    currentPage={data.page}
+                                    totalPages={data.pages}
+                                    onPageChange={handlePageChange}
+                                    isLoading={loading}
+                                />
+                            )}
                         </div>
                     </>
                 )}
