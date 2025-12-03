@@ -52,8 +52,8 @@ export default function AboutPage() {
                             </p>
                             <p>
                                 Muitas vezes, a nota geral (estrelas) esconde detalhes técnicos cruciais.
-                                O consumidor precisa saber se o produto "dá gargalo" ou se tem "coil whine",
-                                e não apenas se ele é "bom".
+                                O consumidor precisa saber se o produto &quot;dá gargalo&quot; ou se tem &quot;coil whine&quot;,
+                                e não apenas se ele é &quot;bom&quot;.
                             </p>
                         </div>
                     </div>

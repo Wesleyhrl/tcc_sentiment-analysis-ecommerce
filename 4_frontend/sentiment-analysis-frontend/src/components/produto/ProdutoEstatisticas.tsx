@@ -67,7 +67,7 @@ export default function ProdutoEstatisticas({ estatisticas }: { estatisticas: Es
                   <div>
                     <h4 className="font-semibold text-sm">Sentimento Predominante</h4>
                     <p className="text-sm text-muted-foreground mt-1">
-                      Indica qual emoção apareceu com mais frequência nos comentários. Se a maioria dos clientes elogiou, será "Positivo".
+                      Indica qual emoção apareceu com mais frequência nos comentários. Se a maioria dos clientes elogiou, será &quot;Positivo&quot;.
                     </p>
                   </div>
                 </div>
@@ -81,10 +81,10 @@ export default function ProdutoEstatisticas({ estatisticas }: { estatisticas: Es
                     <h4 className="font-semibold text-sm">Assimilação Nota/Sentimento</h4>
                     <p className="text-sm text-muted-foreground mt-1">
                       Mede a <strong>coerência</strong> do cliente. 
-                      <br/>
-                      • <strong>Alta (perto de 100%):</strong> A nota (estrelas) condiz com o texto escrito.
-                      <br/>
-                      • <strong>Baixa:</strong> Pode indicar incoerência (texto bom, nota baixa) ou erro de digitação do usuário.
+                      <br />
+                      <strong>Alta (perto de 100%):</strong> A nota (estrelas) condiz com o texto escrito.
+                      <br />
+                      <strong>Baixa:</strong> Pode indicar incoerência (texto bom, nota baixa) ou erro de digitação do usuário.
                     </p>
                   </div>
                 </div>
