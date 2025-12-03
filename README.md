@@ -2,6 +2,8 @@
 
 Este projeto coleta e analisa avaliações de produtos em e-commerce, classificando automaticamente os sentimentos para auxiliar consumidores na tomada de decisão. Os dados são extraídos da plataforma Kabum via **web scraping**, processados com modelos de linguagem pré-treinados e disponibilizados por meio de uma **API REST**, com visualização em interface web em **Next.js**.
 
+> 🌐 **Demonstração Online:** Acesse o projeto em execução em **[https://reviewsentimentum.vercel.app/](https://reviewsentimentum.vercel.app/)**
+
 ## Pré-requisitos
 
 Antes de começar, você precisa ter instalado:
@@ -20,6 +22,9 @@ Cada módulo possui sua própria documentação detalhada. Clique nos links abai
 - [**2_analise**](./2_analise/README.md) -> Processamento, Fine-tuning e Classificação de Sentimentos.
 - [**3_backend**](./3_backend/README.md) -> API REST em FastAPI e acesso ao MongoDB.
 - [**4_frontend**](./4_frontend/sentiment-analysis-frontend/README.md) -> Interface Web (Next.js / React) para visualização dos dados.
+
+
+🧠 [**Clique aqui para ver fine-tuning do Modelo (Notebook)**](./2_analise/fine_tuning.ipynb)
 
 ## Tecnologias Utilizadas
 
@@ -59,6 +64,22 @@ O projeto também utiliza Node.js, execute na raiz para instalar todas as depend
 ```bash
 npm run setup
 ```
+## Configuração de Ambiente (.env)
+
+Para que a comunicação entre o Frontend e o Backend funcione localmente, é necessário configurar as chaves de acesso.
+
+1.  **Backend:** Crie um arquivo `.env` dentro da pasta `3_backend`:
+
+    ```env
+    API_KEY="key-local"
+    ```
+
+2.  **Frontend:** Crie um arquivo `.env` dentro da pasta `4_frontend/sentiment-analysis-frontend`:
+
+    ```env
+    API_KEY="key-local"
+    ```
+
 ## Como Executar
 
 Utilize os scripts configurados no `package.json` da raiz para facilitar a execução:
@@ -88,6 +109,14 @@ Utilize os scripts configurados no `package.json` da raiz para facilitar a execu
 
    * Frontend: `http://localhost:3000`
    * API Docs (Swagger): `http://localhost:8000/docs`
+
+## Referência
+
+**Modelo utilizado:**
+
+Dantas, A. C. (2024). *caramelo-smile* (Revision 2707a19). Hugging Face.  
+Disponível em: https://huggingface.co/Adilmar/caramelo-smile  
+DOI: 10.57967/hf/2061
 
 ## Aviso
 
