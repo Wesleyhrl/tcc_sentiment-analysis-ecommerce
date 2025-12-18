@@ -4,6 +4,14 @@ Este projeto coleta e analisa avaliações de produtos em e-commerce, classifica
 
 > 🌐 **Demonstração Online:** Acesse o projeto em execução em **[https://reviewsentimentum.vercel.app/](https://reviewsentimentum.vercel.app/)**
 
+## 📄 Artigo Científico (TCC)
+
+Este software compõe a parte prática do meu Trabalho de Conclusão de Curso em Sistemas de Informação. O artigo completo detalha a contextualização, a fundamentação teórica, a metodologia, o desenvolvimento e a análise dos resultados e conclusão.
+
+Disponível para leitura:
+- [**📖 Ler PDF Agora (GitHub)**](./docs/TCC_WesleyHenriqueDeLima.pdf)
+- [🔗 Registro Oficial (Biblioteca PUC Minas)](https://bib.pucminas.br/acervo/571650)
+
 ## Pré-requisitos
 
 Antes de começar, você precisa ter instalado:
