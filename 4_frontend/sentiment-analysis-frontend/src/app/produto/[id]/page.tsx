@@ -33,7 +33,7 @@ export default async function Produto({ params }: { params: Promise<ProdutoRoute
       {/* Accordion com dados do produto */}
       <Accordion type="single" collapsible className="bg-white p-4 rounded-md shadow-md mb-6">
         <AccordionItem value="info">
-          <AccordionTrigger className="text-lg font-medium">Informações do Produto</AccordionTrigger>
+          <AccordionTrigger className="cursor-pointer text-lg font-medium [&>svg]:w-7 [&>svg]:h-7">Informações do Produto</AccordionTrigger>
           <AccordionContent>
             <ProdutoInfo produto={productData.produto} />
           </AccordionContent>

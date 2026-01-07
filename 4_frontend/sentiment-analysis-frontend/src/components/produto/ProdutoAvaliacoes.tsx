@@ -18,10 +18,10 @@ export default function ProdutoAvaliacoes({ avaliacoes }: { avaliacoes: Avaliaca
     <div className="space-y-4">
       <h3 className="text-xl font-semibold">Avaliações {filteredAvaliacoes.length}</h3>
       <ButtonGroup>
-        <Button className='bg-black' onClick={() => setFilter('all')}>Todas</Button>
-        <Button className='bg-positive hover:bg-green-800' onClick={() => setFilter('positive')}  >Positivas</Button>
-        <Button className='bg-neutral hover:bg-gray-700' onClick={() => setFilter('neutral')} >Neutras</Button>
-        <Button className='bg-negative hover:bg-red-800' onClick={() => setFilter('negative')} >Negativas</Button>
+        <Button className='bg-black hover:bg-gray-700 cursor-pointer' onClick={() => setFilter('all')}>Todas</Button>
+        <Button className='bg-positive hover:bg-green-800 cursor-pointer' onClick={() => setFilter('positive')}  >Positivas</Button>
+        <Button className='bg-neutral hover:bg-gray-700 cursor-pointer' onClick={() => setFilter('neutral')} >Neutras</Button>
+        <Button className='bg-negative hover:bg-red-800 cursor-pointer' onClick={() => setFilter('negative')} >Negativas</Button>
       </ButtonGroup>
       <div className="grid gap-4">
         {filteredAvaliacoes.map((a) => (

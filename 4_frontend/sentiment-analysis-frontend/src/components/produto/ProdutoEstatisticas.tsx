@@ -41,7 +41,7 @@ export default function ProdutoEstatisticas({ estatisticas }: { estatisticas: Es
           
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 text-muted-foreground hover:text-primary">
+              <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 text-muted-foreground hover:text-primary cursor-pointer">
                 <Info size={18} />
                 <span className="sr-only">Entenda as estatísticas</span>
               </Button>
@@ -98,7 +98,7 @@ export default function ProdutoEstatisticas({ estatisticas }: { estatisticas: Es
                     <h4 className="font-semibold text-sm">Confiança Média da IA</h4>
                     <p className="text-sm text-muted-foreground mt-1">
                       O quanto o nosso sistema de Inteligência Artificial tem certeza da sua análise. 
-                      Valores acima da linha laranja (85%) indicam uma leitura confiável do contexto.
+                      Valores acima da linha (85%) indicam uma leitura confiável do contexto.
                     </p>
                   </div>
                 </div>
@@ -233,8 +233,8 @@ export default function ProdutoEstatisticas({ estatisticas }: { estatisticas: Es
                       <Cell key={`cell-${index}`} fill={COLORS[entry.name]} fillOpacity={0.8} />
                     ))}
                   </Bar>
-                  <ReferenceLine y={0.85} stroke="#f97316" strokeDasharray="3 3">
-                    <Label value="Meta Qualidade (85%)" position="insideTopRight" fill="#f97316" fontSize={11} offset={10} />
+                  <ReferenceLine y={0.85} stroke="#4f46e5" strokeDasharray="3 3">
+                    <Label value="Meta Qualidade (85%)" position="insideTopRight" fill="#4f46e5" fontSize={11} offset={10} fontWeight={700} />
                   </ReferenceLine>
 
                 </BarChart>
