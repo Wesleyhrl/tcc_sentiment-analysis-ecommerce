@@ -13,7 +13,12 @@ import {
     BrainCircuit,
     Zap,
     CheckCircle2,
-    Code2
+    Code2,
+    GraduationCap, // Novo
+    User,          // Novo
+    FileText,      // Novo
+    Linkedin,      // Novo (ou use o Github existente se o lucide não tiver o brand icon, mas geralmente tem)
+    Github
 } from "lucide-react";
 import Image from 'next/image';
 
@@ -28,7 +33,7 @@ export default function AboutPage() {
                         Sobre o Review Sentimentum
                     </h1>
                     <p className="text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
-                        Uma ferramenta inteligente que utiliza Processamento de Linguagem Natural (NLP) para auxiliar consumidores, 
+                        Uma ferramenta inteligente que utiliza Processamento de Linguagem Natural (NLP) para auxiliar consumidores,
                         transformando milhares de comentários em melhores decisões de compra de produtos de informática.
                     </p>
                 </div>
@@ -85,7 +90,7 @@ export default function AboutPage() {
                                 </li>
                                 <li className="flex items-center gap-3 text-slate-700">
                                     <CheckCircle2 className="h-5 w-5 text-green-500" />
-                                    <span>Foco no nicho de Informatica</span>
+                                    <span>Foco no nicho de Informática</span>
                                 </li>
                             </ul>
                         </CardContent>
@@ -145,37 +150,96 @@ export default function AboutPage() {
                 </section>
 
                 {/* AcadêmicO e Autor */}
-                <Card className="bg-white text-white">
-                    <div>
-                        <div className="p-8 md:p-12">
-                            <h2 className="text-2xl font-bold mb-4 text-primary-blue">Sobre o Projeto Acadêmico</h2>
-                            <p className="text-slate-600 mb-4 leading-relaxed">
-                                Este software foi desenvolvido como parte do Trabalho de Conclusão de Curso (TCC)
-                                para o curso de <strong>Sistemas de Informação</strong> na instituição <strong>Pontifícia Universidade Católica de Minas Gerais</strong>.
-                            </p>
-                            <p className="text-slate-600 mb-8 leading-relaxed">
-                                O objetivo é demonstrar a aplicação prática de técnicas de Inteligência Artificial
-                                modernas em problemas reais do cotidiano do consumidor brasileiro.
-                            </p>
+                <section>
+                    <div className="text-center mb-10">
+                        <h2 className="text-3xl font-bold text-slate-900 mb-4">Sobre o projeto</h2>
+                    </div>
+                    <Card className="bg-white border-t-4 border-t-slate-800 shadow-lg overflow-hidden">
+                        <div className="grid md:grid-cols-2 gap-0">
 
-                            <div className="flex flex-wrap gap-4">
+                            {/* Lado Esquerdo: Contexto Acadêmico */}
+                            <div className="p-8 md:p-12  flex flex-col justify-center">
+                                <div className="flex items-center gap-3 mb-6">
+                                    <div className="p-3 bg-blue-100 rounded-lg">
+                                        <GraduationCap className="h-6 w-6 text-blue-700" />
+                                    </div>
+                                    <h2 className="text-2xl font-bold text-slate-900">Contexto Acadêmico</h2>
+                                </div>
 
-                                <Button asChild size="lg" className="gap-2 bg-gray-600 hover:bg-gray-700 text-white">
-                                    <Link href="https://github.com/Wesleyhrl" target="_blank">
-                                        GitHub
-                                        <Image
-                                            src="/github-mark-white.svg"
-                                            alt="GitHub"
-                                            width={24}
-                                            height={24}
-                                            priority
-                                        />
-                                    </Link>
-                                </Button>
+                                <p className="text-slate-600 mb-6 leading-relaxed">
+                                    Projeto desenvolvido como Trabalho de Conclusão de Curso (TCC)
+                                    para o Bacharelado em <strong>Sistemas de Informação</strong>.
+                                </p>
+
+                                <ul className="space-y-3 text-sm text-slate-500">
+                                    <li className="flex items-center gap-2">
+                                        <span className="font-semibold text-slate-700">Instituição:</span>
+                                        Pontifícia Universidade Católica de Minas Gerais (PUC Minas)
+                                    </li>
+                                    <li className="flex items-center gap-2">
+                                        <span className="font-semibold text-slate-700">Ano/Semestre:</span>
+                                        2025 / 2º Semestre
+                                    </li>
+                                </ul>
+                            </div>
+
+                            {/* Lado Direito: Sobre o Autor & Links */}
+                            <div className="p-8 md:p-12 flex flex-col justify-center border-l border-slate-100">
+                                <div className="flex items-center gap-3 mb-6">
+                                    <div className="p-3 bg-slate-100 rounded-lg">
+                                        <User className="h-6 w-6 text-slate-700" />
+                                    </div>
+                                    <h2 className="text-2xl font-bold text-slate-900">O Autor</h2>
+                                </div>
+
+                                <p className="text-slate-600 mb-8 leading-relaxed">
+                                    Desenvolvido por <strong>Wesley Henrique</strong>.
+                                    O objetivo é demonstrar a aplicação prática de técnicas de Inteligência Artificial
+                                    modernas em problemas reais do cotidiano do consumidor brasileiro.
+                                </p>
+
+                                <div className="flex flex-wrap gap-4">
+                                    {/* Botão GitHub */}
+                                    <Button asChild variant="outline" className="gap-2 border-slate-300 hover:bg-slate-100 text-slate-700">
+                                        <Link href="https://github.com/Wesleyhrl/tcc_sentiment-analysis-ecommerce" target="_blank">
+                                            <Image
+                                                src="/github-mark.svg"
+                                                alt="GitHub"
+                                                width={20}
+                                                height={20}
+                                                priority
+                                            />
+                                            Repositório
+                                        </Link>
+                                    </Button>
+
+                                    {/*Botão LinkedIn*/}
+                                    <Button asChild className="gap-2 bg-[#0077b5] hover:bg-[#005582] text-white">
+                                        <Link href="https://www.linkedin.com/in/wesleyhrl" target="_blank">
+                                            <Image
+                                                src="/linkedin-icon-white.svg"
+                                                alt="GitHub"
+                                                width={20}
+                                                height={20}
+                                                priority
+                                            />
+                                            LinkedIn
+                                        </Link>
+                                    </Button>
+
+                                    {/* Botão Documentação/Artigo*/}
+                                    <Button asChild variant="outline" className="gap-2 border-slate-300 hover:bg-slate-100 text-slate-700">
+                                        <Link href="/tcc.pdf" target="_blank">
+                                            <FileText />
+                                            Ler Artigo
+                                        </Link>
+                                    </Button>
+
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </Card>
+                    </Card>
+                </section>
             </div>
         </div>
     );
